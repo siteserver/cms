@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
     public partial class ContentsLayerImportController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
@@ -59,7 +59,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     return this.Error(Constants.ErrorUpload);
                 }
 
-                (_, filePath, _) = await _pathManager.UploadImageAsync(site, file);
+                var (success, imageFilePath, errorMessage) = await _pathManager.UploadImageAsync(site, file);
+                if (!success)
+                {
+                    return this.Error(errorMessage);
+                }
+                filePath = imageFilePath;
                 url = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
             }
             else if (request.ImportType == "txt")
@@ -70,7 +75,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 }
             }
 
-            await _pathManager.UploadAsync(file, filePath);
+            if (request.ImportType != "image")
+            {
+                await _pathManager.UploadAsync(file, filePath);
+            }
 
             if (request.ImportType == "excel")
             {

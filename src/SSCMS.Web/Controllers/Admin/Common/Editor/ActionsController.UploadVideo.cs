@@ -11,10 +11,15 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 {
     public partial class ActionsController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteActionsUploadVideo)]
         public async Task<ActionResult<UploadVideoResult>> UploadVideo([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
+            if (!await HasSiteAccessAsync(request.SiteId))
+            {
+                return Unauthorized();
+            }
+
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             if (file == null)

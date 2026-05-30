@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Home
 {
     public partial class HomeConfigController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromForm] IFormFile file)
         {
@@ -22,6 +22,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Home
             if (file == null) return this.Error(Constants.ErrorUpload);
             var fileName = _pathManager.GetUploadFileName(file.FileName);
             if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
+            {
+                return this.Error(Constants.ErrorImageExtensionAllowed);
+            }
+            if (!await ImageUtils.IsValidImageAsync(file))
             {
                 return this.Error(Constants.ErrorImageExtensionAllowed);
             }

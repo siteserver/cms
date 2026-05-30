@@ -47,11 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             }
             else
             {
-                content.Checked = request.Content.CheckedLevel >= site.CheckContentLevel;
-                if (content.Checked)
-                {
-                    content.CheckedLevel = 0;
-                }
+                (content.Checked, content.CheckedLevel) = await CheckManager.GetAllowedCheckStateAsync(_authManager, site, channel.Id, request.Content.CheckedLevel);
             }
 
             if (content.LinkType == Enums.LinkType.None)

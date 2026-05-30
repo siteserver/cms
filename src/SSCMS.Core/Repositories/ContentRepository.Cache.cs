@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Datory;
 using Datory.Utils;
+using SSCMS.Core.Services;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -117,7 +118,7 @@ namespace SSCMS.Core.Repositories
 
             if (!string.IsNullOrEmpty(where))
             {
-                whereBuilder.Append($" AND ({where}) ");
+                whereBuilder.Append(GetSafeStlRawWhereString(where));
             }
 
             return whereBuilder.ToString();
@@ -216,7 +217,7 @@ namespace SSCMS.Core.Repositories
 
             if (!string.IsNullOrEmpty(where))
             {
-                whereBuilder.Append($" AND ({where}) ");
+                whereBuilder.Append(GetSafeStlRawWhereString(where));
             }
 
             return whereBuilder.ToString();
@@ -295,10 +296,20 @@ namespace SSCMS.Core.Repositories
 
             if (!string.IsNullOrEmpty(where))
             {
-                whereStringBuilder.Append($" AND ({where}) ");
+                whereStringBuilder.Append(GetSafeStlRawWhereString(where));
             }
 
             return whereStringBuilder.ToString();
+        }
+
+        private static string GetSafeStlRawWhereString(string where)
+        {
+            if (!DatabaseManager.IsSafeRawSqlCondition(where))
+            {
+                throw new System.InvalidOperationException("Unsafe raw SQL condition.");
+            }
+
+            return $" AND ({where}) ";
         }
 
         public async Task<int> GetContentIdAsync(string tableName, int siteId, int channelId, int taxis, bool isNextContent)

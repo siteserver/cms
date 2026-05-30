@@ -10,13 +10,13 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(RouteSetDomain)]
         public async Task<ActionResult<BoolResult>> SetDomain([FromBody] SetDomainRequest request)
         {
-            if (string.IsNullOrEmpty(request.SecurityKey))
+            if (request == null)
             {
                 return this.Error("系统参数不足");
             }
-            if (_settingsManager.SecurityKey != request.SecurityKey)
+            if (!TryValidateAgentSecurityKey(request.SecurityKey, out var securityKeyErrorMessage))
             {
-                return this.Error("SecurityKey不正确");
+                return this.Error(securityKeyErrorMessage);
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);

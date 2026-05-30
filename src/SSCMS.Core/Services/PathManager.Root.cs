@@ -197,12 +197,15 @@ namespace SSCMS.Core.Services
             }
 
             var apiUrl = GetApiHostUrl(site, Constants.ApiPrefix);
+            var encryptedFileUrl = _settingsManager.Encrypt(fileUrl);
+            var tokenPayload = $"{site.Id}:{channelId}:{contentId}:{encryptedFileUrl}";
             return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDownload), new NameValueCollection
             {
                 {"siteId", site.Id.ToString()},
                 {"channelId", channelId.ToString()},
                 {"contentId", contentId.ToString()},
-                {"fileUrl", _settingsManager.Encrypt(fileUrl)}
+                {"fileUrl", encryptedFileUrl},
+                {"token", _settingsManager.Encrypt(tokenPayload)}
             });
         }
 
@@ -255,6 +258,8 @@ namespace SSCMS.Core.Services
         public string GetPageContentsApiParameters(int siteId, int pageChannelId, int templateId, int totalNum, int pageCount,
             int currentPageIndex, string stlPageContentsElement)
         {
+            var encryptedElement = _settingsManager.Encrypt(stlPageContentsElement);
+            var tokenPayload = $"{siteId}:{pageChannelId}:{templateId}:{totalNum}:{pageCount}:{currentPageIndex}:{encryptedElement}";
             return $@"
 {{
     siteId: {siteId},
@@ -263,7 +268,8 @@ namespace SSCMS.Core.Services
     totalNum: {totalNum},
     pageCount: {pageCount},
     currentPageIndex: {currentPageIndex},
-    stlPageContentsElement: '{_settingsManager.Encrypt(stlPageContentsElement)}'
+    stlPageContentsElement: '{encryptedElement}',
+    token: '{_settingsManager.Encrypt(tokenPayload)}'
 }}";
         }
 
@@ -271,6 +277,7 @@ namespace SSCMS.Core.Services
             int fileTemplateId, int specialId, bool isRedirect)
         {
             var apiUrl = PageUtils.GetLocalApiUrl(Constants.ApiStlPrefix);
+            var tokenPayload = $"{siteId}:{channelId}:{contentId}:{fileTemplateId}:{specialId}:{isRedirect}";
             return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.RouteStlActionsTrigger), new NameValueCollection
             {
                 {"siteId", siteId.ToString()},
@@ -278,7 +285,8 @@ namespace SSCMS.Core.Services
                 {"contentId", contentId.ToString()},
                 {"fileTemplateId", fileTemplateId.ToString()},
                 {"specialId", specialId.ToString()},
-                {"isRedirect", isRedirect.ToString()}
+                {"isRedirect", isRedirect.ToString()},
+                {"token", _settingsManager.Encrypt(tokenPayload)}
             });
         }
     }

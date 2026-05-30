@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -26,18 +27,21 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private readonly IStorageManager _storageManager;
         private readonly IVodManager _vodManager;
         private readonly ISiteRepository _siteRepository;
+        private readonly IAuthManager _authManager;
 
         public ActionsController(
             IPathManager pathManager,
             IStorageManager storageManager,
             IVodManager vodManager,
-            ISiteRepository siteRepository
+            ISiteRepository siteRepository,
+            IAuthManager authManager
         )
         {
             _pathManager = pathManager;
             _storageManager = storageManager;
             _vodManager = vodManager;
             _siteRepository = siteRepository;
+            _authManager = authManager;
         }
 
         public class ConfigResult
@@ -111,6 +115,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             public int Size { get; set; }
             public int Total { get; set; }
             public IEnumerable<FileResult> List { get; set; }
+        }
+
+        private async Task<bool> HasSiteAccessAsync(int siteId)
+        {
+            return await _authManager.IsSuperAdminAsync() || await _authManager.HasSitePermissionsAsync(siteId);
         }
 
         public class ListImageRequest : SiteRequest

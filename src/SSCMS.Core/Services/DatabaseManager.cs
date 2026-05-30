@@ -370,6 +370,11 @@ namespace SSCMS.Core.Services
 
         public int GetPageTotalCount(string sqlString)
         {
+            if (!IsReadOnlySelectSql(sqlString))
+            {
+                throw new InvalidOperationException("Only read-only SELECT SQL is allowed.");
+            }
+
             var temp = StringUtils.ToLower(sqlString);
             var pos = temp.LastIndexOf("order by", StringComparison.OrdinalIgnoreCase);
             if (pos > -1)
@@ -384,6 +389,11 @@ namespace SSCMS.Core.Services
 
         public string GetStlPageSqlString(string sqlString, string orderString, int totalCount, int itemsPerPage, int currentPageIndex)
         {
+            if (!IsReadOnlySelectSql(sqlString))
+            {
+                throw new InvalidOperationException("Only read-only SELECT SQL is allowed.");
+            }
+
             string retVal;
 
             var temp = StringUtils.ToLower(sqlString);
@@ -623,4 +633,3 @@ SELECT * FROM (
         }
     }
 }
-

@@ -14,29 +14,32 @@ namespace SSCMS.Web.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<BoolResult>> SendSms([FromBody] SendSmsRequest request)
         {
-            var administrator = await _administratorRepository.GetByMobileAsync(request.Mobile);
-
-            if (administrator == null)
+            if (request == null || string.IsNullOrWhiteSpace(request.Mobile))
             {
-                return this.Error("此手机号码未关联管理员，请更换手机号码");
+                return this.Error("请输入有效的手机号码");
             }
 
-            var (success, errorMessage) = await _administratorRepository.ValidateLockAsync(administrator);
-            if (!success)
+            var mobile = request.Mobile.Trim();
+            if (!TryConsumeSendSmsQuota(mobile, PageUtils.GetIpAddress(Request), out var retryAfterSeconds))
             {
-                return this.Error(errorMessage);
+                return this.Error($"请求过于频繁，请在{retryAfterSeconds}秒后重试");
             }
 
-            var code = StringUtils.GetRandomInt(100000, 999999);
-            (success, errorMessage) =
-                await _smsManager.SendSmsAsync(request.Mobile, SmsCodeType.LoginConfirmation, code);
-            if (!success)
+            var administrator = await _administratorRepository.GetByMobileAsync(mobile);
+            if (administrator != null)
             {
-                return this.Error(errorMessage);
+                var (success, _) = await _administratorRepository.ValidateLockAsync(administrator);
+                if (success)
+                {
+                    var code = StringUtils.GetRandomInt(100000, 999999);
+                    (success, _) = await _smsManager.SendSmsAsync(mobile, SmsCodeType.LoginConfirmation, code);
+                    if (success)
+                    {
+                        var cacheKey = GetSmsCodeCacheKey(mobile);
+                        _cacheManager.AddOrUpdateAbsolute(cacheKey, code, 10);
+                    }
+                }
             }
-
-            var cacheKey = GetSmsCodeCacheKey(request.Mobile);
-            _cacheManager.AddOrUpdateAbsolute(cacheKey, code, 10);
 
             return new BoolResult
             {

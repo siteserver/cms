@@ -1,15 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace SSCMS.Web.Tests.IntegrationTests.Admin
 {
     public partial class DashboardControllerTests
-        : IClassFixture<WebApplicationFactory<Startup>>
+        : IClassFixture<TestWebApplicationFactory>
     {
-        private readonly WebApplicationFactory<Startup> _factory;
+        private readonly TestWebApplicationFactory _factory;
 
-        public DashboardControllerTests(WebApplicationFactory<Startup> factory)
+        public DashboardControllerTests(TestWebApplicationFactory factory)
         {
             _factory = factory;
         }

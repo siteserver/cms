@@ -1,9 +1,10 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-noble-chiseled-extra@sha256:a6df1767e8363f13963cc5da5c24d0403b630f66acbf5fd6bc414269e446c8fb AS base
 WORKDIR /app
+EXPOSE 8080
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-noble@sha256:6b0b7f73dc7cce85fe9eaf7cfcfd1dc109accc5b3782c8cba006fbe036da424e AS build
 WORKDIR /sscms
 RUN wget https://dl.sscms.com/cms/7.4.0/sscms-7.4.0-linux-x64.tar.gz
 RUN tar -xzf sscms-7.4.0-linux-x64.tar.gz
@@ -13,7 +14,9 @@ RUN echo `date +%Y-%m-%d-%H-%M-%S` > /sscms/_wwwroot/sitefiles/version.txt
 
 FROM base AS final
 WORKDIR /app
-COPY --from=build /sscms .
+COPY --from=build --chown=1654:1654 /sscms .
+USER 1654
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 CMD ["dotnet", "--list-runtimes"]
 ENTRYPOINT ["dotnet", "SSCMS.Web.dll"]
 
-# docker build -f Dockerfile.core --no-cache -t sscms/core:latest -t sscms/core:7.4.0 .
+# docker build -f Dockerfile.core --no-cache -t sscms/core:7.4.0 .

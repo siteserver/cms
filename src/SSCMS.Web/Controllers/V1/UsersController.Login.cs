@@ -14,6 +14,18 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteActionsLogin)]
         public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
         {
+            if (request == null)
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
+
+            var loginAccount = !string.IsNullOrEmpty(request.OpenId) ? request.OpenId : request.Account;
+            var ipAddress = PageUtils.GetIpAddress(Request);
+            if (!TryConsumeLoginAttempt(loginAccount, ipAddress, out var retryAfterSeconds))
+            {
+                return this.Error($"请求过于频繁，请在{retryAfterSeconds}秒后重试");
+            }
+
             User user = null;
             var errorMessage = Constants.ErrorNotFound;
 
@@ -31,6 +43,7 @@ namespace SSCMS.Web.Controllers.V1
                 return this.Error(errorMessage);
             }
 
+            ClearLoginRateLimit(loginAccount, ipAddress);
             var accessToken = _authManager.AuthenticateUser(user, request.IsPersistent);
 
             await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user);

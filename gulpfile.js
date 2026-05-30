@@ -3,12 +3,11 @@ const del = require('del');
 const gulp = require('gulp');
 const through2 = require('through2');
 const minifier = require('gulp-minifier');
-const minify = require('gulp-minify');
+const terser = require('gulp-terser');
 const rename = require('gulp-rename');
 const replace = require('gulp-string-replace');
-const filter = require('gulp-filter');
 const runSequence = require('gulp4-run-sequence');
-const ALY = require('aliyun-sdk');
+const OSS = require('ali-oss');
 
 let os = '';
 const version = process.env.PRODUCTVERSION || '7.4.0';
@@ -68,23 +67,30 @@ function transform(file, html) {
   return file;
 }
 
-function writeOss(bucket, key, fileName) {
-  var ossStream = require('aliyun-oss-upload-stream')(new ALY.OSS({
-    accessKeyId: process.env.OSS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.OSS_SECRET_ACCESS_KEY,
-    endpoint: 'http://oss-cn-beijing.aliyuncs.com',
-    apiVersion: '2013-10-15'
-  }));
+async function writeOss(bucket, key, fileName) {
+  const isPlaceholder = value => !value || value.includes('$(');
+  const hasOssConfig = !isPlaceholder(bucket) &&
+    !isPlaceholder(process.env.OSS_ACCESS_KEY_ID) &&
+    !isPlaceholder(process.env.OSS_SECRET_ACCESS_KEY) &&
+    /^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/.test(bucket);
 
-  var upload = ossStream.upload({
-    Bucket: bucket,
-    Key: key
+  if (!hasOssConfig) {
+    const isReleaseBranch = process.env.BUILD_SOURCEBRANCH === 'refs/heads/master' ||
+      process.env.BUILD_SOURCEBRANCH === 'refs/heads/main';
+    if (isReleaseBranch) throw new Error('Missing OSS configuration for release upload');
+
+    console.log(`Skipping OSS upload for ${fileName}: OSS credentials are unavailable in this build.`);
+    return;
+  }
+
+  var client = new OSS({
+    accessKeyId: process.env.OSS_ACCESS_KEY_ID,
+    accessKeySecret: process.env.OSS_SECRET_ACCESS_KEY,
+    bucket: bucket,
+    endpoint: 'https://oss-cn-beijing.aliyuncs.com'
   });
 
-  // upload.minPartSize(1048576);
-
-  var read = fs.createReadStream(`./publish/dist/${fileName}`);
-  read.pipe(upload);
+  await client.put(key, `./publish/dist/${fileName}`);
 }
 
 // build tasks
@@ -238,14 +244,9 @@ gulp.task("copy-css", function () {
 });
 
 gulp.task("copy-js", function () {
-  const f = filter(['**/*-min.js']);
   return gulp
     .src(["./src/SSCMS.Web/wwwroot/sitefiles/**/*.js"])
-    .pipe(minify())
-    .pipe(f)
-    .pipe(rename(function (path) {
-      path.basename = path.basename.substring(0, path.basename.length - 4);
-    }))
+    .pipe(terser())
     .pipe(gulp.dest(publishDir + "/wwwroot/sitefiles"));
 });
 
@@ -309,27 +310,27 @@ gulp.task("copy-win-x86", async function (callback) {
 });
 
 gulp.task("publish-linux-x64-tgz", async function () {
-  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-x64.tar.gz`, `sscms-${version}-linux-x64.tar.gz`);
+  await writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-x64.tar.gz`, `sscms-${version}-linux-x64.tar.gz`);
 });
 
 gulp.task("publish-linux-x64-zip", async function () {
-  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-x64.zip`, `sscms-${version}-linux-x64.zip`);
+  await writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-x64.zip`, `sscms-${version}-linux-x64.zip`);
 });
 
 gulp.task("publish-linux-arm64-tgz", async function () {
-  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-arm64.tar.gz`, `sscms-${version}-linux-arm64.tar.gz`);
+  await writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-arm64.tar.gz`, `sscms-${version}-linux-arm64.tar.gz`);
 });
 
 gulp.task("publish-linux-arm64-zip", async function () {
-  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-arm64.zip`, `sscms-${version}-linux-arm64.zip`);
+  await writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-arm64.zip`, `sscms-${version}-linux-arm64.zip`);
 });
 
 gulp.task("publish-win-x64-zip", async function () {
-  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-win-x64.zip`, `sscms-${version}-win-x64.zip`);
+  await writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-win-x64.zip`, `sscms-${version}-win-x64.zip`);
 });
 
 gulp.task("publish-win-x86-zip", async function () {
-  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-win-x86.zip`, `sscms-${version}-win-x86.zip`);
+  await writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-win-x86.zip`, `sscms-${version}-win-x86.zip`);
 
 //   var fileName = 'ci.js';
 //   var date = new Date();

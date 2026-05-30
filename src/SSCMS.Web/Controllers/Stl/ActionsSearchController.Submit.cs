@@ -17,6 +17,16 @@ namespace SSCMS.Web.Controllers.Stl
         [HttpPost, Route(Constants.RouteStlActionsSearch)]
         public async Task<ActionResult<StringResult>> Submit([FromBody] StlSearchRequest request)
         {
+            if (request == null)
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
+
+            if (!TryConsumeRequestQuota(PageUtils.GetIpAddress(Request), out var retryAfterSeconds))
+            {
+                return this.Error($"请求过于频繁，请在{retryAfterSeconds}秒后重试");
+            }
+
             var template = string.Empty;
             try
             {
@@ -84,7 +94,7 @@ namespace SSCMS.Web.Controllers.Stl
                             var pagedContents = pagedBuilder.ToString();
                             pagedBuilder = new StringBuilder();
                             pagedBuilder.Append(RegexUtils.Replace(
-                                $"({request.Word.Replace(" ", "\\s")})(?!</a>)(?![^><]*>)", pagedContents,
+                                GetHighlightRegexPattern(request.Word), pagedContents,
                                 $"<span style='color:#cc0000'>{request.Word}</span>"));
                         }
 
@@ -121,7 +131,7 @@ namespace SSCMS.Web.Controllers.Stl
                             var pagedContents = pagedBuilder.ToString();
                             pagedBuilder = new StringBuilder();
                             pagedBuilder.Append(RegexUtils.Replace(
-                                $"({request.Word.Replace(" ", "\\s")})(?!</a>)(?![^><]*>)", pagedContents,
+                                GetHighlightRegexPattern(request.Word), pagedContents,
                                 $"<span style='color:#cc0000'>{request.Word}</span>"));
                         }
 

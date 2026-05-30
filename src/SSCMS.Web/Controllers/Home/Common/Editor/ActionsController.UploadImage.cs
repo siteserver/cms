@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
 {
     public partial class ActionsController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteActionsUploadImage)]
         public async Task<ActionResult<UploadImageResult>> UploadImage([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {

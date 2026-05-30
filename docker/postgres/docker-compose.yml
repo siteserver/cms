@@ -1,5 +1,3 @@
-version: "3.7"
-
 volumes:
 
   volume-postgres:
@@ -11,30 +9,29 @@ volumes:
 services:
 
   sscms-postgres:
-    image: postgres
+    image: postgres:17-alpine@sha256:979c4379dd698aba0b890599a6104e082035f98ef31d9b9291ec22f2b13059ca
     restart: always
-    ports:
-      - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres-password
+      POSTGRES_USER: sscms
+      POSTGRES_PASSWORD: ${SSCMS_DATABASE_PASSWORD:?set SSCMS_DATABASE_PASSWORD}
+      POSTGRES_DB: sscms
     volumes:
       - volume-postgres:/var/lib/postgresql/data
 
   sscms-core:
     depends_on:
       - sscms-postgres
-    image: "sscms/core"
+    image: "sscms/core:7.4.0"
     restart: always
     ports:
-      - "80:80"
+      - "80:8080"
     environment:
-      SSCMS_SECURITY_KEY: e2a3d303-ac9b-41ff-9154-930710af0845
+      SSCMS_SECURITY_KEY: ${SSCMS_SECURITY_KEY:?set SSCMS_SECURITY_KEY}
       SSCMS_DATABASE_TYPE: PostgreSQL
       SSCMS_DATABASE_HOST: sscms-postgres
-      SSCMS_DATABASE_USER: postgres
-      SSCMS_DATABASE_PASSWORD: postgres-password
-      SSCMS_DATABASE_NAME: postgres
+      SSCMS_DATABASE_USER: sscms
+      SSCMS_DATABASE_PASSWORD: ${SSCMS_DATABASE_PASSWORD:?set SSCMS_DATABASE_PASSWORD}
+      SSCMS_DATABASE_NAME: sscms
     volumes:
       - volume-sscms:/app/wwwroot
 

@@ -136,11 +136,11 @@ namespace SSCMS.Core.Repositories
                 return (null, errorMessage);
             }
 
-            password = EncodePassword(password, PasswordFormat.SM4, out var passwordSalt);
+            password = EncodePassword(password, PasswordFormat.Hashed, out var passwordSalt);
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
-            user.Id = await InsertWithoutValidationAsync(user, password, PasswordFormat.SM4, passwordSalt);
+            user.Id = await InsertWithoutValidationAsync(user, password, PasswordFormat.Hashed, passwordSalt);
 
             await CacheIpAddressAsync(ipAddress);
 
@@ -154,11 +154,11 @@ namespace SSCMS.Core.Repositories
                 user.Mobile = user.UserName;
             }
 
-            password = EncodePassword(password, PasswordFormat.SM4, out var passwordSalt);
+            password = EncodePassword(password, PasswordFormat.Hashed, out var passwordSalt);
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
-            return await InsertWithoutValidationAsync(user, password, PasswordFormat.SM4, passwordSalt);
+            return await InsertWithoutValidationAsync(user, password, PasswordFormat.Hashed, passwordSalt);
         }
 
         private async Task<int> InsertWithoutValidationAsync(User user, string password, PasswordFormat passwordFormat, string passwordSalt)
@@ -272,18 +272,7 @@ namespace SSCMS.Core.Repositories
             }
             else if (passwordFormat == PasswordFormat.Hashed)
             {
-                passwordSalt = GenerateSalt();
-
-                var src = Encoding.Unicode.GetBytes(password);
-                var buffer2 = Convert.FromBase64String(passwordSalt);
-                var dst = new byte[buffer2.Length + src.Length];
-                byte[] inArray = null;
-                Buffer.BlockCopy(buffer2, 0, dst, 0, buffer2.Length);
-                Buffer.BlockCopy(src, 0, dst, buffer2.Length, src.Length);
-                var algorithm = SHA1.Create(); // HashAlgorithm.Create("SHA1");
-                if (algorithm != null) inArray = algorithm.ComputeHash(dst);
-
-                if (inArray != null) retVal = Convert.ToBase64String(inArray);
+                retVal = PasswordHashUtils.HashPassword(password, out passwordSalt);
             }
             else if (passwordFormat == PasswordFormat.Encrypted)
             {
@@ -342,8 +331,8 @@ namespace SSCMS.Core.Repositories
                 return (false, $"密码不符合规则，请包含{config.UserPasswordRestriction.GetDisplayName()}");
             }
 
-            password = EncodePassword(password, PasswordFormat.SM4, out var passwordSalt);
-            await ChangePasswordAsync(userId, PasswordFormat.SM4, passwordSalt, password);
+            password = EncodePassword(password, PasswordFormat.Hashed, out var passwordSalt);
+            await ChangePasswordAsync(userId, PasswordFormat.Hashed, passwordSalt, password);
             return (true, string.Empty);
         }
 
@@ -362,6 +351,13 @@ namespace SSCMS.Core.Repositories
                 .Where(nameof(User.Id), user.Id)
                 .CachingRemove(GetCacheKeysToRemove(user))
             );
+
+            _cacheManager.Remove(GetTokenCacheKey(user));
+        }
+
+        private static string GetTokenCacheKey(User user)
+        {
+            return $"user:{user.Id}:token";
         }
 
         public async Task CheckAsync(IList<int> userIds)
@@ -470,6 +466,11 @@ namespace SSCMS.Core.Repositories
 
         public bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, PasswordFormat passwordFormat, string passwordSalt)
         {
+            if (passwordFormat == PasswordFormat.Hashed)
+            {
+                return PasswordHashUtils.VerifyPassword(password, isPasswordMd5, dbPassword, passwordSalt);
+            }
+
             var decodePassword = DecodePassword(dbPassword, passwordFormat, passwordSalt);
             if (isPasswordMd5)
             {
@@ -715,4 +716,3 @@ namespace SSCMS.Core.Repositories
         }
     }
 }
-

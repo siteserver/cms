@@ -100,5 +100,6 @@ namespace SSCMS.Web.Controllers.Home.Write
             public int ContentId { get; set; }
             public Content Content { get; set; }
         }
+
     }
 }

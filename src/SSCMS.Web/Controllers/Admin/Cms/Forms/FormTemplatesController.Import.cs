@@ -14,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
 {
     public partial class FormTemplatesController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<BoolResult>> Import([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {

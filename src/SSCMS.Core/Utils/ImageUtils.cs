@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Numerics;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -89,6 +91,30 @@ namespace SSCMS.Core.Utils
             {
                 img.Save(imagePath);
             }
+        }
+
+        public static bool IsValidImage(byte[] imgByte)
+        {
+            if (imgByte == null || imgByte.Length == 0) return false;
+
+            try
+            {
+                return Image.Identify(imgByte) != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static async Task<bool> IsValidImageAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0) return false;
+
+            await using var stream = file.OpenReadStream();
+            await using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            return IsValidImage(memoryStream.ToArray());
         }
 
         public static void ResizeImageIfExceeding(string imagePath, int resizeWidth)

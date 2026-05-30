@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class ImageController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(Route)]
         public async Task<ActionResult<MaterialImage>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
         {
@@ -37,6 +37,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             if (!_pathManager.IsImageSizeAllowed(site, file.Length))
             {
                 return this.Error(Constants.ErrorImageSizeAllowed);
+            }
+            if (!await ImageUtils.IsValidImageAsync(file))
+            {
+                return this.Error(Constants.ErrorImageExtensionAllowed);
             }
 
             var materialFileName = PathUtils.GetMaterialFileName(fileName);

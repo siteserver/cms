@@ -14,6 +14,17 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteSendSms)]
         public async Task<ActionResult<BoolResult>> SendSms([FromQuery] FormRequest formRequest, [FromBody] SendSmsRequest request)
         {
+            if (request == null || string.IsNullOrWhiteSpace(request.Mobile))
+            {
+                return this.Error("请输入有效的手机号码");
+            }
+
+            var mobile = request.Mobile.Trim();
+            if (!SmsRateLimitUtils.TryConsume(_cacheManager, typeof(FormsController), mobile, PageUtils.GetIpAddress(Request), out var retryAfterSeconds))
+            {
+                return this.Error($"请求过于频繁，请在{retryAfterSeconds}秒后重试");
+            }
+
             Form form = null;
             if (formRequest.FormId > 0)
             {
@@ -45,13 +56,13 @@ namespace SSCMS.Web.Controllers.V1
 
             var code = StringUtils.GetRandomInt(100000, 999999);
             var (success, errorMessage) =
-                await _smsManager.SendSmsAsync(request.Mobile, SmsCodeType.Authentication, code);
+                await _smsManager.SendSmsAsync(mobile, SmsCodeType.Authentication, code);
             if (!success)
             {
                 return this.Error(errorMessage);
             }
 
-            var cacheKey = GetSmsCodeCacheKey(form.Id, request.Mobile);
+            var cacheKey = GetSmsCodeCacheKey(form.Id, mobile);
             _cacheManager.AddOrUpdateAbsolute(cacheKey, code, 10);
 
             return new BoolResult

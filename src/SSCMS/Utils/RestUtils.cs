@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using RestSharp;
 
@@ -15,9 +14,6 @@ namespace SSCMS.Utils
         public static async Task<(bool success, TResult result, string failureMessage)> GetAsync<TResult>(string url, string accessToken = null) where TResult : class
 
         {
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient(url);
             var request = new RestRequest
             {
@@ -43,9 +39,6 @@ namespace SSCMS.Utils
 
         public static async Task<(bool success, string result, string errorMessage)> GetStringAsync(string url)
         {
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient(url);
             var request = new RestRequest
             {
@@ -67,9 +60,6 @@ namespace SSCMS.Utils
 
         public static async Task<(bool success, string result, string errorMessage)> PostStringAsync(string url, string body)
         {
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient(url);
             var request = new RestRequest
             {
@@ -92,10 +82,6 @@ namespace SSCMS.Utils
         public static async Task<(bool success, TResult result, string failureMessage)> PostAsync<TRequest, TResult>(string url, TRequest body, string accessToken = null) where TResult : class
 
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient(url);
             var request = new RestRequest
             {
@@ -122,9 +108,6 @@ namespace SSCMS.Utils
         public static async Task<(bool success, string failureMessage)> PostAsync<TRequest>(string url, TRequest body, string accessToken = null) where TRequest : class
 
         {
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient(url);
             var request = new RestRequest
             {
@@ -151,9 +134,6 @@ namespace SSCMS.Utils
         public static async Task<(bool success, string failureMessage)> PostAsync(string url, string accessToken = null)
 
         {
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient(url);
             var request = new RestRequest
             {
@@ -180,10 +160,6 @@ namespace SSCMS.Utils
         public static async Task<(bool success, TResult result, string failureMessage)> PostAsync<TResult>(string url, string accessToken = null) where TResult : class
 
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient(url);
             var request = new RestRequest
             {
@@ -210,9 +186,6 @@ namespace SSCMS.Utils
             string filePath, string accessToken) where TResult : class
 
         {
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient(url);
             var request = new RestRequest
             {
@@ -242,9 +215,6 @@ namespace SSCMS.Utils
             string filePath, string accessToken)
 
         {
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient(url);
             var request = new RestRequest
             {
@@ -274,9 +244,6 @@ namespace SSCMS.Utils
             string filePath, string accessToken = null)
 
         {
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient(url);
             var request = new RestRequest
             {
@@ -304,29 +271,11 @@ namespace SSCMS.Utils
 
         public static async Task DownloadAsync(string url, string filePath)
         {
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
-            FileUtils.DeleteFileIfExists(filePath);
-            FileUtils.WriteText(filePath, string.Empty);
-            using (var writer = File.OpenWrite(filePath))
-            {
-                var client = new RestClient(url);
-                var request = new RestRequest();
-
-                var stream = await client.DownloadStreamAsync(request);
-                using (stream)
-                {
-                    stream.CopyTo(writer);
-                }
-            }
+            await HttpClientUtils.DownloadAsync(url, filePath);
         }
 
         public static async Task<string> GetIpAddressAsync()
         {
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, certificate, chain, errors) => true;
-
             var client = new RestClient("https://api.ipify.org/?format=text");
             var request = new RestRequest
             {

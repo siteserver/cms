@@ -7,7 +7,7 @@ SSCMS 官方镜像，跟随 SSCMS 版本同步更新。
 拉取最新版本的 [SSCMS 镜像](https://hub.docker.com/r/sscms/core)，运行命令：
 
 ``` bash
-docker pull sscms/core:latest
+docker pull sscms/core:7.4.0
 ```
 
 如果需要获取指定版本的 [SSCMS 镜像](https://hub.docker.com/r/sscms/core)，可以运行命令：
@@ -27,19 +27,21 @@ mkdir wwwroot
 接下来，我们使用 SQLite 本地数据库运行 SSCMS：
 
 ```bash
+export SSCMS_SECURITY_KEY="$(uuidgen)"
+
 docker run -d \
     --name my-sscms \
-    -p 80:80 \
+    -p 80:8080 \
     --restart=always \
     -v "$(pwd)"/wwwroot:/app/wwwroot \
-    -e SSCMS_SECURITY_KEY=e2a3d303-ac9b-41ff-9154-930710af0845 \
+    -e SSCMS_SECURITY_KEY="$SSCMS_SECURITY_KEY" \
     -e SSCMS_DATABASE_TYPE=SQLite \
-    sscms/core:latest
+    sscms/core:7.4.0
 ```
 
 - `-d` 参数让容器以后台任务形式运行
 - `-name` 参数将容器实例命名为 my-sscms，可以更换为其他名称
-- `-p` 参数映射容器的80端口到宿主机的80端口，如果希望使用8080端口访问可以设置 `-p 8080:80`
+- `-p` 参数映射容器的8080端口到宿主机的80端口，如果希望使用8080端口访问可以设置 `-p 8080:8080`
 - `-restart` 参数使得容器能够自动重启，必须使用 `always` 选项，否则容器将无法安装及升级插件
 - `-v` 参数将当前文件夹下的 `wwwroot` 目录作为网站跟目录，从而保存 SSCMS 站点数据，其中 `$(pwd)` 代表当前文件夹
 - `-e` 参数设置容器运行环境变量，SSCMS 系统将读取环境变量，作为容器运行的参数，在此我们设置 `SecurityKey` 为随机的 GUID 值，数据库类型为 SQLite
@@ -50,14 +52,16 @@ docker run -d \
 除了将当前文件夹下的 `wwwroot` 目录作为站点根目录存储数据，我们也可以将镜像数据持久化存储在 Volume 中：
 
 ```bash
+export SSCMS_SECURITY_KEY="$(uuidgen)"
+
 docker run -d \
     --name my-sscms \
-    -p 80:80 \
+    -p 80:8080 \
     --restart=always \
     -v volume-sscms:/app/wwwroot \
-    -e SSCMS_SECURITY_KEY=e2a3d303-ac9b-41ff-9154-930710af0845 \
+    -e SSCMS_SECURITY_KEY="$SSCMS_SECURITY_KEY" \
     -e SSCMS_DATABASE_TYPE=SQLite \
-    sscms/core:latest
+    sscms/core:7.4.0
 ```
 
 此命令将自动创建名称为 `volume-sscms` 的 Docker Volume。

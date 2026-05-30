@@ -9,14 +9,9 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
-            var config = await _configRepository.GetAsync();
-
-            if (config.DatabaseVersion == _settingsManager.Version)
+            if (request == null || !string.Equals(_settingsManager.SecurityKey, request.SecurityKey))
             {
-                if (_settingsManager.SecurityKey != request.SecurityKey)
-                {
-                    return this.Error("SecurityKey 输入错误！");
-                }
+                return this.Error("SecurityKey 输入错误！");
             }
 
             await _databaseManager.SyncDatabaseAsync();

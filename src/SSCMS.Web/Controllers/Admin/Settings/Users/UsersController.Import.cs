@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     public partial class UsersController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<ImportResult>> Import([FromQuery] ImportRequest request, [FromForm] IFormFile file)
         {

@@ -192,7 +192,7 @@ namespace SSCMS.Core.Services
         public async Task<bool> HasSitePermissionsAsync(int siteId)
         {
             var dict = await GetSitePermissionDictAsync();
-            return await IsSiteAdminAsync() || dict.ContainsKey(siteId);
+            return await IsSiteAdminAsync(siteId) || dict.ContainsKey(siteId);
         }
 
         public async Task<bool> HasSitePermissionsAsync(int siteId, params string[] permissions)
@@ -221,7 +221,7 @@ namespace SSCMS.Core.Services
             while (true)
             {
                 if (channelId == 0) return false;
-                if (await IsSiteAdminAsync()) return true;
+                if (await IsSiteAdminAsync(siteId)) return true;
                 var dictKey = GetPermissionDictKey(siteId, channelId);
                 var dict = await GetContentPermissionDictAsync();
                 if (dict.ContainsKey(dictKey) && await HasPermissionsAsync(dict[dictKey], permissions)) return true;

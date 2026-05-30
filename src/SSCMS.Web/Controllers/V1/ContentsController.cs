@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,21 @@ namespace SSCMS.Web.Controllers.V1
         public const string OpNotIn = "NotIn";
         public const string OpLike = "Like";
         public const string OpNotLike = "NotLike";
+        private static readonly Regex SafeQueryIdentifierRegex = new Regex(@"^[A-Za-z_][A-Za-z0-9_]*$", RegexOptions.Compiled);
+        private static readonly HashSet<string> SafeQueryOperators = new HashSet<string>
+        {
+            OpEquals,
+            "!=",
+            "<>",
+            ">",
+            ">=",
+            "<",
+            "<=",
+            OpIn,
+            OpNotIn,
+            OpLike,
+            OpNotLike
+        };
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
@@ -105,6 +121,53 @@ namespace SSCMS.Web.Controllers.V1
         public class CheckResult
         {
             public List<Content> Contents { get; set; }
+        }
+
+        private static bool IsSafeQueryIdentifier(string identifier)
+        {
+            return !string.IsNullOrEmpty(identifier) && SafeQueryIdentifierRegex.IsMatch(identifier);
+        }
+
+        private static bool IsSafeQueryOperator(string op)
+        {
+            return !string.IsNullOrEmpty(op) && SafeQueryOperators.Contains(op);
+        }
+
+        private static bool TryValidateQueryRequest(QueryRequest request, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            if (request?.Wheres != null)
+            {
+                foreach (var where in request.Wheres)
+                {
+                    if (!IsSafeQueryIdentifier(where.Column))
+                    {
+                        errorMessage = "Invalid query column";
+                        return false;
+                    }
+
+                    var op = string.IsNullOrEmpty(where.Operator) ? OpEquals : where.Operator;
+                    if (!IsSafeQueryOperator(op))
+                    {
+                        errorMessage = "Invalid query operator";
+                        return false;
+                    }
+                }
+            }
+
+            if (request?.Orders != null)
+            {
+                foreach (var order in request.Orders)
+                {
+                    if (!IsSafeQueryIdentifier(order.Column))
+                    {
+                        errorMessage = "Invalid query column";
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private async Task<Query> GetQueryAsync(int siteId, int? channelId, QueryRequest request)

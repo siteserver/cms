@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
-            var isChecked = request.CheckedLevel >= site.CheckContentLevel;
+            var (isChecked, checkedLevel) = await CheckManager.GetAllowedCheckStateAsync(_authManager, site, channel.Id, request.CheckedLevel);
 
             var adminId = _authManager.AdminId;
             var contentIdList = new List<int>();
@@ -58,7 +58,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                         LastEditAdminId = adminId,
                         AddDate = DateTime.Now,
                         Checked = isChecked,
-                        CheckedLevel = request.CheckedLevel,
+                        CheckedLevel = checkedLevel,
                         Title = wordManager.Title,
                         ImageUrl = wordManager.ImageUrl,
                         Body = wordManager.Body

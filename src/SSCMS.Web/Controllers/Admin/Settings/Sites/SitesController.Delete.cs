@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<SitesResult>> Delete([FromBody] DeleteRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSites))
+            if (!await HasSiteManagementPermissionAsync(request.SiteId))
             {
                 return Unauthorized();
             }

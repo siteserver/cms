@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.V1
     public partial class UsersController
     {
         [OpenApiOperation("上传用户头像 API", "上传用户头像，使用POST发起请求，请求地址为/api/v1/users/{id}/avatar")]
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUserAvatar)]
         public async Task<ActionResult<User>> UploadAvatar([FromRoute] int id, [FromForm] IFormFile file)
         {
@@ -39,6 +39,10 @@ namespace SSCMS.Web.Controllers.V1
             var filePath = _pathManager.GetUserUploadPath(user.Id, fileName);
 
             if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
+            {
+                return this.Error(Constants.ErrorImageExtensionAllowed);
+            }
+            if (!await ImageUtils.IsValidImageAsync(file))
             {
                 return this.Error(Constants.ErrorImageExtensionAllowed);
             }

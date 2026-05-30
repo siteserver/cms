@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (channelInfo == null) return this.Error("无法确定内容对应的栏目");
 
             var caching = new CacheUtils(_cacheManager);
-            var isChecked = request.CheckedLevel >= site.CheckContentLevel;
+            var (isChecked, checkedLevel) = await CheckManager.GetAllowedCheckStateAsync(_authManager, site, channelInfo.Id, request.CheckedLevel);
 
             var contentIdList = new List<int>();
 
@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                         continue;
 
                     var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
-                    contentIdList.AddRange(await importObject.ImportContentsByZipFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
+                    contentIdList.AddRange(await importObject.ImportContentsByZipFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, checkedLevel, adminId, 0, SourceManager.Default));
                 }
             }
             else if (request.ImportType == "excel")
@@ -62,7 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                         continue;
 
                     var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
-                    contentIdList.AddRange(await importObject.ImportContentsByXlsxFileAsync(channelInfo, localFilePath, request.Attributes, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
+                    contentIdList.AddRange(await importObject.ImportContentsByXlsxFileAsync(channelInfo, localFilePath, request.Attributes, request.IsOverride, isChecked, checkedLevel, adminId, 0, SourceManager.Default));
                 }
             }
             else if (request.ImportType == "image")
@@ -84,7 +84,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     }
 
                     var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
-                    contentIdList.AddRange(await importObject.ImportContentsByImageFileAsync(channelInfo, fileName, fileUrl, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
+                    contentIdList.AddRange(await importObject.ImportContentsByImageFileAsync(channelInfo, fileName, fileUrl, request.IsOverride, isChecked, checkedLevel, adminId, 0, SourceManager.Default));
                 }
             }
             else if (request.ImportType == "txt")
@@ -96,7 +96,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                         continue;
 
                     var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
-                    contentIdList.AddRange(await importObject.ImportContentsByTxtFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
+                    contentIdList.AddRange(await importObject.ImportContentsByTxtFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, checkedLevel, adminId, 0, SourceManager.Default));
                 }
             }
 

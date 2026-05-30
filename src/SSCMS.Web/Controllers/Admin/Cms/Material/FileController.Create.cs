@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class FileController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(Route)]
         public async Task<ActionResult<MaterialFile>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
         {

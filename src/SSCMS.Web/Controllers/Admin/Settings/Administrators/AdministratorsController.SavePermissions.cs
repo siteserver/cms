@@ -11,7 +11,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RoutePermissions)]
         public async Task<ActionResult<SavePermissionsResult>> SavePermissions([FromRoute] int adminId, [FromBody] SavePermissionsRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators) ||
+                !await _authManager.IsSuperAdminAsync())
             {
                 return Unauthorized();
             }

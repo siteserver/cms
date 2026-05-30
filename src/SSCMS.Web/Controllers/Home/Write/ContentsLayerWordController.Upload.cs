@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Home.Write
 {
     public partial class ContentsLayerWordController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<NameTitle>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {

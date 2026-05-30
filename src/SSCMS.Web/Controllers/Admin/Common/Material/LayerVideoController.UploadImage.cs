@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
 {
     public partial class LayerVideoController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUploadImage)]
         public async Task<ActionResult<UploadResult>> UploadImage([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
@@ -39,6 +39,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
             if (!_pathManager.IsImageSizeAllowed(site, file.Length))
             {
                 return this.Error(Constants.ErrorImageSizeAllowed);
+            }
+            if (!await ImageUtils.IsValidImageAsync(file))
+            {
+                return this.Error(Constants.ErrorImageExtensionAllowed);
             }
 
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);

@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     public partial class TemplatesAssetsController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<BoolResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
@@ -69,6 +69,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 if (!_pathManager.IsImageSizeAllowed(site, file.Length))
                 {
                     return this.Error(Constants.ErrorImageSizeAllowed);
+                }
+                if (!await ImageUtils.IsValidImageAsync(file))
+                {
+                    return this.Error(Constants.ErrorImageExtensionAllowed);
                 }
             }
             else

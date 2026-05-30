@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -110,6 +111,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         public class SitesResult
         {
             public List<Site> Sites { get; set; }
+        }
+
+        private async Task<bool> HasSiteManagementPermissionAsync(int siteId)
+        {
+            return await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSites) &&
+                   (await _authManager.IsSuperAdminAsync() || await _authManager.HasSitePermissionsAsync(siteId));
         }
     }
 }

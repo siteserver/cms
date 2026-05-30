@@ -86,6 +86,11 @@ namespace SSCMS.Web.Controllers.Stl
                 }
                 else if (request.SiteId.HasValue && request.ChannelId.HasValue && request.ContentId.HasValue && !string.IsNullOrEmpty(request.FileUrl))
                 {
+                    if (!IsValidContentDownloadToken(request))
+                    {
+                        return Unauthorized();
+                    }
+
                     var fileUrl = _settingsManager.Decrypt(request.FileUrl);
                     var site = await _siteRepository.GetAsync(request.SiteId.Value);
                     var channel = await _channelRepository.GetAsync(request.ChannelId.Value);

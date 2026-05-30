@@ -10,8 +10,18 @@ namespace SSCMS.Web.Controllers.Stl
     public partial class ActionsTriggerController
     {
         [HttpGet, Route(Constants.RouteStlActionsTrigger)]
-        public async Task<RedirectResult> Get([FromQuery] GetRequest request)
+        public async Task<IActionResult> Get([FromQuery] GetRequest request)
         {
+            if (!IsValidTriggerToken(request))
+            {
+                return Unauthorized();
+            }
+
+            if (!TryConsumeRequestQuota(request.Token, PageUtils.GetIpAddress(Request), out var retryAfterSeconds))
+            {
+                return this.Error($"请求过于频繁，请在{retryAfterSeconds}秒后重试");
+            }
+
             var site = await _siteRepository.GetAsync(request.SiteId);
             var redirectUrl = await _pathManager.GetIndexPageUrlAsync(site, false);
 

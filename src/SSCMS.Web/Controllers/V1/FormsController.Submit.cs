@@ -36,9 +36,10 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var isSmsEnabled = await _smsManager.IsSmsEnabledAsync();
+            var codeCacheKey = string.Empty;
             if (isSmsEnabled && form.IsSms)
             {
-                var codeCacheKey = GetSmsCodeCacheKey(form.Id, formData.Get<string>("SmsMobile"));
+                codeCacheKey = GetSmsCodeCacheKey(form.Id, formData.Get<string>("SmsMobile"));
                 var code = _cacheManager.Get<int>(codeCacheKey);
                 if (code == 0 || TranslateUtils.ToInt(formData.Get<string>("SmsCode")) != code)
                 {
@@ -54,6 +55,11 @@ namespace SSCMS.Web.Controllers.V1
             formData.FormId = form.Id;
 
             formData.Id = await _formDataRepository.InsertAsync(form, formData);
+            if (isSmsEnabled && form.IsSms)
+            {
+                _cacheManager.Remove(codeCacheKey);
+            }
+
             await _formManager.SendNotifyAsync(form, styles, formData);
 
             return formData;

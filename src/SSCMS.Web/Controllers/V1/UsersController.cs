@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
+using SSCMS.Utils;
+using SSCMS.Web.Controllers;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -20,6 +24,8 @@ namespace SSCMS.Web.Controllers.V1
         private const string RouteUserUpdate = "users/{id:int}/actions/update";
         private const string RouteUserDelete = "users/{id:int}/actions/delete";
         private const string RouteUserResetPassword = "users/{id:int}/actions/resetPassword";
+        private const int LoginRateLimitWindowMinutes = 10;
+        private const int LoginRateLimitMaxAttempts = 10;
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -31,6 +37,7 @@ namespace SSCMS.Web.Controllers.V1
         private readonly IDbCacheRepository _dbCacheRepository;
         private readonly IUserGroupRepository _userGroupRepository;
         private readonly IUsersInGroupsRepository _usersInGroupsRepository;
+        private readonly ICacheManager _cacheManager;
 
         public UsersController(
             IAuthManager authManager,
@@ -42,7 +49,8 @@ namespace SSCMS.Web.Controllers.V1
             IStatRepository statRepository,
             IDbCacheRepository dbCacheRepository,
             IUserGroupRepository userGroupRepository,
-            IUsersInGroupsRepository usersInGroupsRepository
+            IUsersInGroupsRepository usersInGroupsRepository,
+            ICacheManager cacheManager
         )
         {
             _authManager = authManager;
@@ -55,6 +63,7 @@ namespace SSCMS.Web.Controllers.V1
             _dbCacheRepository = dbCacheRepository;
             _userGroupRepository = userGroupRepository;
             _usersInGroupsRepository = usersInGroupsRepository;
+            _cacheManager = cacheManager;
         }
 
         public class ListRequest
@@ -104,10 +113,52 @@ namespace SSCMS.Web.Controllers.V1
             public string NewPassword { get; set; }
         }
 
+        private class LoginRateLimitState
+        {
+            public int Count { get; set; }
+            public DateTime ExpireAt { get; set; }
+        }
+
         public class CreateRequest
         {
             public User User { get; set; }
             public List<string> GroupNames { get; set; }
+        }
+
+        private static string GetLoginRateLimitCacheKey(string account, string ipAddress)
+        {
+            return CacheUtils.GetClassKey(typeof(UsersController), nameof(Login), StringUtils.ToLower(account), ipAddress);
+        }
+
+        private bool TryConsumeLoginAttempt(string account, string ipAddress, out int retryAfterSeconds)
+        {
+            retryAfterSeconds = 0;
+            var cacheKey = GetLoginRateLimitCacheKey(account, ipAddress);
+            lock (RateLimitLockManager.GetLock(cacheKey))
+            {
+                var state = _cacheManager.Get<LoginRateLimitState>(cacheKey);
+                if (state == null || state.ExpireAt <= DateTime.Now)
+                {
+                    state = new LoginRateLimitState
+                    {
+                        Count = 0,
+                        ExpireAt = DateTime.Now.AddMinutes(LoginRateLimitWindowMinutes)
+                    };
+                }
+
+                state.Count++;
+                var minutes = Math.Max(1, (int)Math.Ceiling((state.ExpireAt - DateTime.Now).TotalMinutes));
+                _cacheManager.AddOrUpdateAbsolute(cacheKey, state, minutes);
+                if (state.Count <= LoginRateLimitMaxAttempts) return true;
+
+                retryAfterSeconds = Math.Max(1, (int)Math.Ceiling((state.ExpireAt - DateTime.Now).TotalSeconds));
+                return false;
+            }
+        }
+
+        private void ClearLoginRateLimit(string account, string ipAddress)
+        {
+            _cacheManager.Remove(GetLoginRateLimitCacheKey(account, ipAddress));
         }
     }
 }

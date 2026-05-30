@@ -38,11 +38,31 @@ namespace SSCMS.Web.Controllers.Stl
             public int PageCount { get; set; }
             public int CurrentPageIndex { get; set; }
             public string StlPageContentsElement { get; set; }
+            public string Token { get; set; }
         }
 
         public class SubmitResult
         {
             public string Html { get; set; }
+        }
+
+        private static string GetPageContentsTokenPayload(SubmitRequest request)
+        {
+            return $"{request.SiteId}:{request.PageChannelId}:{request.TemplateId}:{request.TotalNum}:{request.PageCount}:{request.CurrentPageIndex}:{request.StlPageContentsElement}";
+        }
+
+        private bool IsValidToken(SubmitRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.Token)) return false;
+
+            try
+            {
+                return _settingsManager.Decrypt(request.Token) == GetPageContentsTokenPayload(request);
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

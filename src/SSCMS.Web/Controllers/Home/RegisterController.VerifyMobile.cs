@@ -16,6 +16,8 @@ namespace SSCMS.Web.Controllers.Home
                 return this.Error("输入的验证码有误或验证码已超时");
             }
 
+            _cacheManager.Remove(codeCacheKey);
+
             return new BoolResult
             {
                 Value = true

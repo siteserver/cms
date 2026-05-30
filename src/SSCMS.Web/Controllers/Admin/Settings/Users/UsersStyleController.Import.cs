@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     public partial class UsersStyleController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<BoolResult>> Import([FromForm] IFormFile file)
         {

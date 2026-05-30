@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -121,10 +122,21 @@ namespace SSCMS.Utils
         {
             if (string.IsNullOrEmpty(parentDirectoryPath) || string.IsNullOrEmpty(path)) return false;
 
-            parentDirectoryPath = StringUtils.ToLower(parentDirectoryPath.Trim().TrimEnd(Path.DirectorySeparatorChar));
-            path = StringUtils.ToLower(path.Trim().TrimEnd(Path.DirectorySeparatorChar));
+            try
+            {
+                parentDirectoryPath = Path.GetFullPath(parentDirectoryPath.Trim())
+                    .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                path = Path.GetFullPath(path.Trim())
+                    .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            }
+            catch
+            {
+                return false;
+            }
 
-            return parentDirectoryPath == path || path.StartsWith(parentDirectoryPath);
+            return string.Equals(parentDirectoryPath, path, StringComparison.OrdinalIgnoreCase) ||
+                   path.StartsWith(parentDirectoryPath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) ||
+                   path.StartsWith(parentDirectoryPath + Path.AltDirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
         }
 
         public static void MoveDirectory(string srcDirectoryPath, string destDirectoryPath, bool isOverride)

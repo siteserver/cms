@@ -34,6 +34,7 @@ namespace SSCMS.Web.Controllers.Admin
                 return this.Error($"更改密码失败：{errorMessage}");
             }
 
+            _cacheManager.Remove(codeCacheKey);
             await _authManager.AddAdminLogAsync("重设管理员密码", $"管理员:{administrator.UserName}");
 
             return new BoolResult

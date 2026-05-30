@@ -37,6 +37,8 @@ namespace SSCMS.Web.Controllers.Home
                 return this.Error($"更改密码失败：{errorMessage}");
             }
 
+            _cacheManager.Remove(codeCacheKey);
+
             return new BoolResult
             {
                 Value = true

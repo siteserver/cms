@@ -1,15 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace SSCMS.Web.Tests.IntegrationTests
 {
     public class BasicTests
-        : IClassFixture<WebApplicationFactory<Startup>>
+        : IClassFixture<TestWebApplicationFactory>
     {
-        private readonly WebApplicationFactory<Startup> _factory;
+        private readonly TestWebApplicationFactory _factory;
 
-        public BasicTests(WebApplicationFactory<Startup> factory)
+        public BasicTests(TestWebApplicationFactory factory)
         {
             _factory = factory;
         }

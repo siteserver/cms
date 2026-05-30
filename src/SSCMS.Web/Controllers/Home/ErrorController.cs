@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
@@ -8,6 +9,7 @@ using SSCMS.Repositories;
 namespace SSCMS.Web.Controllers.Home
 {
     [OpenApiIgnore]
+    [Authorize(Roles = Types.Roles.User)]
     [Route(Constants.ApiHomePrefix)]
     public partial class ErrorController : ControllerBase
     {

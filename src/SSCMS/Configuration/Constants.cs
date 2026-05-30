@@ -19,6 +19,7 @@ namespace SSCMS.Configuration
         public const string EncryptStingIndicator = "0secret0";
 
         public const int AccessTokenExpireDays = 7;
+        public const long MaxUploadRequestSize = 100L * 1024 * 1024;
 
         public const string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页占位符
 

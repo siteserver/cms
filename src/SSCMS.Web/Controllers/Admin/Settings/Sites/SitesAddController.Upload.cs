@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     public partial class SitesAddController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromForm] IFormFile file)
         {

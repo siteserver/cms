@@ -11,6 +11,11 @@ namespace SSCMS.Web.Controllers.Stl
         [HttpPost, Route(Constants.RouteStlActionsPageContents)]
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
+            if (!IsValidToken(request))
+            {
+                return Unauthorized();
+            }
+
             var user = await _authManager.GetUserAsync();
 
             var site = await _siteRepository.GetAsync(request.SiteId);

@@ -35,6 +35,9 @@ namespace SSCMS.Web.Controllers.V1
                 return Unauthorized();
             }
 
+            var originalChecked = content.Checked;
+            var originalCheckedLevel = content.CheckedLevel;
+
             content.LoadDict(request);
 
             content.SiteId = siteId;
@@ -44,6 +47,17 @@ namespace SSCMS.Web.Controllers.V1
             var postCheckedLevel = content.CheckedLevel;
             var isChecked = postCheckedLevel >= site.CheckContentLevel;
             var checkedLevel = postCheckedLevel;
+
+            if (site.CheckContentLevel <= 0)
+            {
+                isChecked = true;
+                checkedLevel = 0;
+            }
+            else if (isChecked && !await _authManager.HasContentPermissionsAsync(siteId, channelId, MenuUtils.ContentPermissions.CheckLevel1))
+            {
+                isChecked = originalChecked;
+                checkedLevel = originalCheckedLevel;
+            }
 
             content.Checked = isChecked;
             content.CheckedLevel = checkedLevel;

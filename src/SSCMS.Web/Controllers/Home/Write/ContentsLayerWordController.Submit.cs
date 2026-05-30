@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             if (channel == null) return this.Error(Constants.ErrorNotFound);
 
             var styles = await _tableStyleRepository.GetContentStylesAsync(site, channel);
-            var isChecked = request.CheckedLevel >= site.CheckContentLevel;
+            var (isChecked, checkedLevel) = await CheckManager.GetAllowedCheckStateAsync(_authManager, site, channel.Id, request.CheckedLevel);
             var adminId = _authManager.AdminId;
             var userId = _authManager.UserId;
 
@@ -56,7 +56,7 @@ namespace SSCMS.Web.Controllers.Home.Write
                     UserId = userId,
                     LastEditAdminId = adminId,
                     Checked = isChecked,
-                    CheckedLevel = request.CheckedLevel
+                    CheckedLevel = checkedLevel
                 };
                 contentInfo.LoadDict(dict);
 

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
@@ -10,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     public partial class AddLayerUploadController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteActionsUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromForm] IFormFile file)
         {
@@ -32,11 +33,13 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return this.Error("插件包为Zip格式，请选择有效的文件上传");
             }
 
-            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
+            var uploadId = Guid.NewGuid().ToString("N");
+            var temporaryFileName = $"{uploadId}{sExt}";
+            var filePath = _pathManager.GetTemporaryFilesPath(temporaryFileName);
             FileUtils.DeleteFileIfExists(filePath);
             await _pathManager.UploadAsync(file, filePath);
 
-            var tempPluginPath = _pathManager.GetTemporaryFilesPath(PathUtils.GetFileNameWithoutExtension(fileName));
+            var tempPluginPath = _pathManager.GetTemporaryFilesPath(uploadId);
             DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
             DirectoryUtils.CreateDirectoryIfNotExists(tempPluginPath);
             _pathManager.ExtractZip(filePath, tempPluginPath);
@@ -44,10 +47,10 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(tempPluginPath);
             if (plugin == null)
             {
+                FileUtils.DeleteFileIfExists(filePath);
+                DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
                 return this.Error(errorMessage);
             }
-
-            DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
 
             var oldPlugin = _pluginManager.GetPlugin(plugin.PluginId);
 
@@ -55,15 +58,17 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             {
                 var pluginPath = _pathManager.GetPluginPath(plugin.PluginId);
                 DirectoryUtils.DeleteDirectoryIfExists(pluginPath);
-                DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
-                _pathManager.ExtractZip(filePath, pluginPath);
+                DirectoryUtils.MoveDirectory(tempPluginPath, pluginPath, true);
+                DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
             }
+
+            FileUtils.DeleteFileIfExists(filePath);
 
             return new UploadResult
             {
                 OldPlugin = oldPlugin,
                 NewPlugin = plugin,
-                FileName = fileName
+                FileName = temporaryFileName
             };
         }
     }

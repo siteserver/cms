@@ -59,32 +59,27 @@ namespace SSCMS.Web
             var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath, entryAssembly);
             var pluginManager = services.AddPlugins(_config, settingsManager);
 
-            if (settingsManager.CorsIsOrigins)
+            var corsOrigins = (settingsManager.CorsOrigins ?? Array.Empty<string>())
+                .Where(origin => !string.IsNullOrWhiteSpace(origin))
+                .Select(origin => origin.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            services.AddCors(options =>
             {
-                services.AddCors(options =>
+                options.AddPolicy(CorsPolicy, builder =>
                 {
-                    options.AddPolicy(CorsPolicy,
-                        builder => builder
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .WithOrigins(settingsManager.CorsOrigins)
-                            .AllowCredentials()
-                    );
+                    builder.AllowAnyMethod().AllowAnyHeader();
+
+                    if (settingsManager.CorsIsOrigins && corsOrigins.Length > 0)
+                    {
+                        builder.WithOrigins(corsOrigins).AllowCredentials();
+                        return;
+                    }
+
+                    builder.SetIsOriginAllowed(_ => true);
                 });
-            }
-            else
-            {
-                services.AddCors(options =>
-                {
-                    options.AddPolicy(CorsPolicy,
-                        builder => builder
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .SetIsOriginAllowed(x => true)
-                            .AllowCredentials()
-                    );
-                });
-            }
+            });
 
             services.AddHttpContextAccessor();
 
@@ -104,36 +99,16 @@ namespace SSCMS.Web
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
-                x.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = (context) =>
-                    {
-                        if (!context.Request.Query.TryGetValue("access_token", out var values))
-                        {
-                            return Task.CompletedTask;
-                        }
-                        if (values.Count > 1)
-                        {
-                            return Task.CompletedTask;
-                        }
-                        var token = values.Single();
-                        if (string.IsNullOrWhiteSpace(token))
-                        {
-                            return Task.CompletedTask;
-                        }
-                        context.Token = token;
-                        return Task.CompletedTask;
-                    }
-                };
             });
 
             // services.Configure<FormOptions>(options =>
             // {
             //     options.MultipartBodyLengthLimit = 524288000;//500MB
             // });
-            services.Configure<FormOptions>(x => {
-                x.ValueLengthLimit = int.MaxValue;
-                x.MultipartBodyLengthLimit = long.MaxValue; // In case of multipart
+            services.Configure<FormOptions>(x =>
+            {
+                x.ValueLengthLimit = 10485760; // 10MB
+                x.MultipartBodyLengthLimit = 104857600; // 100MB
             });
 
             services.AddHealthChecks();
@@ -244,15 +219,48 @@ namespace SSCMS.Web
                 }
                 else
                 {
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     result = TranslateUtils.JsonSerialize(new
                     {
-                        exception.Message,
+                        Message = "服务器内部错误，请稍后重试",
                         CreatedDate = DateTime.Now
                     });
                 }
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(result);
             }));
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.OnStarting(() =>
+                {
+                    var headers = context.Response.Headers;
+                    if (!headers.ContainsKey("X-Content-Type-Options"))
+                    {
+                        headers["X-Content-Type-Options"] = "nosniff";
+                    }
+                    if (!headers.ContainsKey("X-Frame-Options"))
+                    {
+                        headers["X-Frame-Options"] = "SAMEORIGIN";
+                    }
+                    if (!headers.ContainsKey("Content-Security-Policy"))
+                    {
+                        headers["Content-Security-Policy"] = "frame-ancestors 'self'";
+                    }
+                    if (!headers.ContainsKey("Referrer-Policy"))
+                    {
+                        headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+                    }
+                    if (!headers.ContainsKey("Permissions-Policy"))
+                    {
+                        headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+                    }
+
+                    return Task.CompletedTask;
+                });
+
+                await next();
+            });
 
             app.UseCors(CorsPolicy);
 

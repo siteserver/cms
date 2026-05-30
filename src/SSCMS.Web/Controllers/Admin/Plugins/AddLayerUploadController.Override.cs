@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Plugins;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Utils;
@@ -18,7 +19,18 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             }
 
             var fileName = PathUtils.RemoveParentPath(request.FileName);
-            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
+            var tempPluginPath = _pathManager.GetTemporaryFilesPath(PathUtils.GetFileNameWithoutExtension(fileName));
+            var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(tempPluginPath);
+            if (plugin == null)
+            {
+                return this.Error(errorMessage);
+            }
+
+            if (!StringUtils.EqualsIgnoreCase(plugin.PluginId, request.PluginId))
+            {
+                return this.Error("插件包与插件Id不匹配");
+            }
+
             var pluginPath = _pathManager.GetPluginPath(request.PluginId);
             var configPath = PathUtils.Combine(pluginPath, Constants.PluginConfigFileName);
             var configValue = string.Empty;
@@ -28,8 +40,8 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             }
 
             DirectoryUtils.DeleteDirectoryIfExists(pluginPath);
-            DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
-            _pathManager.ExtractZip(filePath, pluginPath);
+            DirectoryUtils.MoveDirectory(tempPluginPath, pluginPath, true);
+            DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
             if (!string.IsNullOrEmpty(configValue))
             {
                 await FileUtils.WriteTextAsync(configPath, configValue);

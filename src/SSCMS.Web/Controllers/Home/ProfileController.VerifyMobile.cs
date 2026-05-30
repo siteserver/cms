@@ -22,6 +22,7 @@ namespace SSCMS.Web.Controllers.Home
             user.MobileVerified = true;
 
             var (success, errorMessage) = await _userRepository.UpdateAsync(user);
+            _cacheManager.Remove(codeCacheKey);
 
             return new BoolResult
             {

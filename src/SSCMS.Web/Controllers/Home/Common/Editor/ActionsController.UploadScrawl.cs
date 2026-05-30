@@ -18,7 +18,18 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
 
             var site = await _siteRepository.GetAsync(siteId);
 
-            var bytes = Convert.FromBase64String(request.File);
+            byte[] bytes;
+            try
+            {
+                bytes = Convert.FromBase64String(request.File);
+            }
+            catch
+            {
+                return new UploadScrawlResult
+                {
+                    Error = Constants.ErrorUpload
+                };
+            }
 
             var original = "scrawl.png";
             var fileName = _pathManager.GetUploadFileName(site, original);
@@ -30,11 +41,18 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
                     Error = Constants.ErrorImageExtensionAllowed
                 };
             }
-            if (!_pathManager.IsImageSizeAllowed(site, request.File.Length))
+            if (!_pathManager.IsImageSizeAllowed(site, bytes.LongLength))
             {
                 return new UploadScrawlResult
                 {
                     Error = Constants.ErrorImageSizeAllowed
+                };
+            }
+            if (!ImageUtils.IsValidImage(bytes))
+            {
+                return new UploadScrawlResult
+                {
+                    Error = Constants.ErrorUpload
                 };
             }
 

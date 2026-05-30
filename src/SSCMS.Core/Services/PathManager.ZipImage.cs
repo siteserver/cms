@@ -1,6 +1,7 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using SSCMS.Core.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
@@ -15,8 +16,7 @@ namespace SSCMS.Core.Services
 
         public void ExtractZip(string zipFilePath, string directoryPath, string fileFilter = null)
         {
-            var fz = new FastZip();
-            fz.ExtractZip(zipFilePath, directoryPath, fileFilter);
+            SafeZipUtils.ExtractZip(zipFilePath, directoryPath, fileFilter);
         }
 
         public (int width, int height) GetImageSize(string filePath)

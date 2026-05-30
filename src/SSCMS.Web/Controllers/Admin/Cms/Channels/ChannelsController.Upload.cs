@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
     public partial class ChannelsController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int siteId, [FromForm] IFormFile file)
         {

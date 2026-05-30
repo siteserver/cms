@@ -17,6 +17,7 @@ src/SSCMS.Web/.vs/
 src/SSCMS.Web/.vscode/
 src/SSCMS.Web/.config/
 src/SSCMS.Web/version.txt
+src/SSCMS.Web/key-*.xml
 sscms-all.sln
 
 *.ps1

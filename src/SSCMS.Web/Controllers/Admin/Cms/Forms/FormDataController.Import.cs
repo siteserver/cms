@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
 {
     public partial class FormDataController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<BoolResult>> Import([FromQuery] ImportRequest request, [FromForm] IFormFile file)
         {

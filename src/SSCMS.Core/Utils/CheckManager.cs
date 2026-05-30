@@ -722,5 +722,35 @@ namespace SSCMS.Core.Utils
             }
             return (isChecked, checkedLevel);
         }
+
+        public static async Task<(bool IsChecked, int CheckedLevel)> GetAllowedCheckStateAsync(IAuthManager authManager, Site site, int channelId, int requestedCheckedLevel, Content source = null)
+        {
+            if (site.CheckContentLevel <= 0)
+            {
+                return (true, 0);
+            }
+
+            var (userIsChecked, userCheckedLevel) = await GetUserCheckLevelAsync(authManager, site, channelId);
+            if (requestedCheckedLevel >= site.CheckContentLevel)
+            {
+                if (userIsChecked)
+                {
+                    return (true, 0);
+                }
+
+                return source != null
+                    ? (source.Checked, source.CheckedLevel)
+                    : (false, userCheckedLevel);
+            }
+
+            if (requestedCheckedLevel > userCheckedLevel)
+            {
+                return source != null
+                    ? (source.Checked, source.CheckedLevel)
+                    : (false, userCheckedLevel);
+            }
+
+            return (false, requestedCheckedLevel);
+        }
     }
 }

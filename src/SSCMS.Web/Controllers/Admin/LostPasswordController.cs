@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
@@ -43,6 +44,43 @@ namespace SSCMS.Web.Controllers.Admin
         private string GetSmsCodeCacheKey(string mobile)
         {
             return CacheUtils.GetClassKey(typeof(LostPasswordController), nameof(Administrator), mobile);
+        }
+
+        private const int DefaultSendSmsMaxCount = 5;
+        private const int DefaultSendSmsWindowMinutes = 10;
+
+        private class SendSmsRateLimitState
+        {
+            public int Count { get; set; }
+            public DateTime ExpireAt { get; set; }
+        }
+
+        private static string GetSendSmsRateLimitCacheKey(string mobile, string ipAddress)
+        {
+            return CacheUtils.GetClassKey(typeof(LostPasswordController), "SendSmsRate",
+                (mobile ?? string.Empty).Trim(), ipAddress ?? "unknown");
+        }
+
+        private bool TryConsumeSendSmsQuota(string mobile, string ipAddress, out int retryAfterSeconds)
+        {
+            retryAfterSeconds = 0;
+            var cacheKey = GetSendSmsRateLimitCacheKey(mobile, ipAddress);
+            var state = _cacheManager.Get<SendSmsRateLimitState>(cacheKey);
+            if (state == null || state.ExpireAt <= DateTime.Now)
+            {
+                state = new SendSmsRateLimitState
+                {
+                    Count = 0,
+                    ExpireAt = DateTime.Now.AddMinutes(DefaultSendSmsWindowMinutes)
+                };
+            }
+
+            state.Count++;
+            _cacheManager.AddOrUpdateAbsolute(cacheKey, state, DefaultSendSmsWindowMinutes);
+            if (state.Count <= DefaultSendSmsMaxCount) return true;
+
+            retryAfterSeconds = (int)Math.Max(1, Math.Ceiling((state.ExpireAt - DateTime.Now).TotalSeconds));
+            return false;
         }
     }
 }

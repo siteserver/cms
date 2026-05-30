@@ -1,4 +1,4 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
+﻿using SSCMS.Core.Utils;
 using SSCMS.Utils;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,8 +14,7 @@ namespace SSCMS.Core.Services
 
             var zipFilePath = await DownloadExtensionAsync(packagesPath, userName, name, version, downloadUrl);
 
-            var fz = new FastZip();
-            fz.ExtractZip(zipFilePath, pluginPath, null);
+            SafeZipUtils.ExtractZip(zipFilePath, pluginPath);
         }
 
         private async Task<string> DownloadExtensionAsync(string packagesPath, string userName, string name, string version, string downloadUrl)

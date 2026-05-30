@@ -21,5 +21,15 @@ namespace SSCMS.Tests
             var testsDirectoryPath = DirectoryUtils.GetParentPath(binDirectoryPath, 2);
             Assert.Equal("tests", PathUtils.GetDirectoryName(testsDirectoryPath, false), StringComparer.OrdinalIgnoreCase);
         }
+
+        [Fact]
+        public void TestIsInDirectoryDoesNotAllowSiblingPrefix()
+        {
+            var parentDirectoryPath = Path.Combine(Path.GetTempPath(), "sscms-upload");
+            var siblingDirectoryPath = Path.Combine(Path.GetTempPath(), "sscms-upload-malicious");
+            var siblingFilePath = Path.Combine(siblingDirectoryPath, "payload.aspx");
+
+            Assert.False(DirectoryUtils.IsInDirectory(parentDirectoryPath, siblingFilePath));
+        }
     }
 }

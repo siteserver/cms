@@ -32,6 +32,26 @@ namespace SSCMS.Web.Controllers.Stl
             public int? ContentId { get; set; }
             public string FileUrl { get; set; }
             public string FilePath { get; set; }
+            public string Token { get; set; }
+        }
+
+        private static string GetContentDownloadTokenPayload(GetRequest request)
+        {
+            return $"{request.SiteId}:{request.ChannelId}:{request.ContentId}:{request.FileUrl}";
+        }
+
+        private bool IsValidContentDownloadToken(GetRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.Token)) return false;
+
+            try
+            {
+                return _settingsManager.Decrypt(request.Token) == GetContentDownloadTokenPayload(request);
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

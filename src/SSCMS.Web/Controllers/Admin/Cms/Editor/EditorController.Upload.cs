@@ -11,10 +11,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
     public partial class EditorController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
+            if (!await _authManager.IsSuperAdminAsync() && !await _authManager.HasSitePermissionsAsync(request.SiteId))
+            {
+                return Unauthorized();
+            }
+
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             if (file == null)

@@ -14,11 +14,7 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(RouteAdministrator)]
         public async Task<ActionResult<Administrator>> Get([FromRoute] int id)
         {
-            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators))
-            {
-                return Unauthorized();
-            }
-            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
+            if (!await IsAdministratorManagementAllowedAsync())
             {
                 return Unauthorized();
             }

@@ -13,13 +13,13 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(RouteAddSite)]
         public async Task<ActionResult<AddSiteResult>> AddSite([FromBody] AddSiteRequest request)
         {
-            if (string.IsNullOrEmpty(request.SecurityKey))
+            if (request == null)
             {
                 return this.Error("系统参数不足");
             }
-            if (_settingsManager.SecurityKey != request.SecurityKey)
+            if (!TryValidateAgentSecurityKey(request.SecurityKey, out var securityKeyErrorMessage))
             {
-                return this.Error("SecurityKey不正确");
+                return this.Error(securityKeyErrorMessage);
             }
 
             if (!request.Root)

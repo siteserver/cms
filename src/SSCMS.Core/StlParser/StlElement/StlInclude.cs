@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Core.StlParser.Attributes;
@@ -11,6 +12,7 @@ namespace SSCMS.Core.StlParser.StlElement
     public static class StlInclude
     {
         public const string ElementName = "stl:include";
+        private const int MaxIncludeDepth = 32;
 
         [StlAttribute(Title = "文件路径")]
         private const string File = nameof(File);
@@ -43,24 +45,34 @@ namespace SSCMS.Core.StlParser.StlElement
         {
             if (string.IsNullOrEmpty(file)) return string.Empty;
             var pageInfo = parseManager.PageInfo;
+            if (pageInfo.IncludeDepth >= MaxIncludeDepth)
+            {
+                throw new InvalidOperationException($"{ElementName} nesting is too deep.");
+            }
 
             var pageParameters = pageInfo.Parameters;
             pageInfo.Parameters = parameters;
             var pageIncludeFile = pageInfo.IncludeFile;
             pageInfo.IncludeFile = file;
+            var pageIncludeDepth = pageInfo.IncludeDepth;
+            pageInfo.IncludeDepth = pageIncludeDepth + 1;
             var pageEditableIndex = pageInfo.EditableIndex;
             pageInfo.EditableIndex = 0;
 
-            var content = await parseManager.PathManager.GetIncludeContentAsync(pageInfo.Site, file);
-            var contentBuilder = new StringBuilder(content);
-            await parseManager.ParseTemplateContentAsync(contentBuilder);
-            var parsedContent = contentBuilder.ToString();
-
-            pageInfo.Parameters = pageParameters;
-            pageInfo.IncludeFile = pageIncludeFile;
-            pageInfo.EditableIndex = pageEditableIndex;
-
-            return parsedContent;
+            try
+            {
+                var content = await parseManager.PathManager.GetIncludeContentAsync(pageInfo.Site, file);
+                var contentBuilder = new StringBuilder(content);
+                await parseManager.ParseTemplateContentAsync(contentBuilder);
+                return contentBuilder.ToString();
+            }
+            finally
+            {
+                pageInfo.Parameters = pageParameters;
+                pageInfo.IncludeFile = pageIncludeFile;
+                pageInfo.IncludeDepth = pageIncludeDepth;
+                pageInfo.EditableIndex = pageEditableIndex;
+            }
         }
     }
 }

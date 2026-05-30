@@ -42,17 +42,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             content.ChannelId = channel.Id;
             content.LastEditAdminId = adminId;
 
-            var isChecked = request.Content.CheckedLevel >= site.CheckContentLevel;
-            if (isChecked != source.Checked)
+            (content.Checked, content.CheckedLevel) = await CheckManager.GetAllowedCheckStateAsync(_authManager, site, channel.Id, request.Content.CheckedLevel, source);
+            if (content.Checked != source.Checked)
             {
                 content.Set(ColumnsManager.CheckAdminId, adminId);
                 content.Set(ColumnsManager.CheckDate, DateTime.Now);
                 content.Set(ColumnsManager.CheckReasons, string.Empty);
-                content.Checked = isChecked;
-                if (isChecked)
-                {
-                    content.CheckedLevel = 0;
-                }
 
                 await _contentCheckRepository.InsertAsync(new ContentCheck
                 {

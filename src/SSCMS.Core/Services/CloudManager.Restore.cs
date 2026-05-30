@@ -48,6 +48,11 @@ namespace SSCMS.Core.Services
                 var eTag = listObject.Value;
 
                 var key = StringUtils.ReplaceStartsWith(storageKey, storagePrefix, string.Empty);
+                if (!IsSafeBackupFileKey(key))
+                {
+                    throw new InvalidOperationException("Unsafe cloud backup file key.");
+                }
+
                 var storageFile = storageFiles.FirstOrDefault(x => x.Key == key);
 
                 var filePath = PathUtils.Combine(rootPath, key);
@@ -110,7 +115,32 @@ namespace SSCMS.Core.Services
 
         public static string GetBackupPrefixKey(int userId, string backupId)
         {
+            if (!IsSafeBackupId(backupId))
+            {
+                throw new ArgumentException("Invalid backup id.", nameof(backupId));
+            }
+
             return $"backups/{userId}/{backupId}/";
+        }
+
+        private static bool IsSafeBackupId(string backupId)
+        {
+            return !string.IsNullOrWhiteSpace(backupId) &&
+                   !backupId.Contains('/') &&
+                   !backupId.Contains('\\') &&
+                   backupId != "." &&
+                   backupId != "..";
+        }
+
+        private static bool IsSafeBackupFileKey(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key) || key.Contains('\\') || key.Contains(':') || key.StartsWith("/"))
+            {
+                return false;
+            }
+
+            var segments = key.Split('/');
+            return segments.All(segment => !string.IsNullOrEmpty(segment) && segment != "." && segment != "..");
         }
 
         public int GetRestoreProgress(string restoreId)

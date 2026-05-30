@@ -31,7 +31,7 @@ namespace SSCMS.Web
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        .UseKestrel(options => { options.Limits.MaxRequestBodySize = long.MaxValue; })
+                        .UseKestrel(options => { options.Limits.MaxRequestBodySize = Constants.MaxUploadRequestSize; })
                         .UseIIS()
                         .UseStartup<Startup>();
                 })

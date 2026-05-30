@@ -1,5 +1,3 @@
-version: "3.7"
-
 volumes:
 
   volume-sscms:
@@ -8,29 +6,27 @@ volumes:
 services:
 
   reverse-proxy:
-    image: "sscms/nginx"
+    image: "sscms/nginx:7.4.0"
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:8080"
     restart: always
 
   cache:
-    image: "redis"
-    ports:
-      - "6379:6379"
+    image: "redis:8-alpine@sha256:09160599abd229764c0fb44cb6be640294e1d360a54b19985ab4843dcf2d90f1"
+    command: ["redis-server", "--requirepass", "${SSCMS_REDIS_PASSWORD:?set SSCMS_REDIS_PASSWORD}"]
     restart: always
 
   sscms:
     depends_on:
       - reverse-proxy
       - cache
-    image: "sscms/core"
+    image: "sscms/core:7.4.0"
     expose:
-      - "80"
+      - "8080"
     environment:
-      SSCMS_SECURITY_KEY: e2a3d303-ac9b-41ff-9154-930710af0845
+      SSCMS_SECURITY_KEY: ${SSCMS_SECURITY_KEY:?set SSCMS_SECURITY_KEY}
       SSCMS_DATABASE_TYPE: SQLite
-      SSCMS_REDIS_HOST: redis://cache
+      SSCMS_REDIS_HOST: redis://:${SSCMS_REDIS_PASSWORD:?set SSCMS_REDIS_PASSWORD}@cache:6379
     volumes:
       - volume-sscms:/app/wwwroot
     restart: always

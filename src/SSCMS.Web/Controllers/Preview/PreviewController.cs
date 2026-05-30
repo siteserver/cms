@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
@@ -16,6 +17,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Preview
 {
     [OpenApiIgnore]
+    [Authorize(Roles = Types.Roles.Administrator + "," + Types.Roles.User)]
     public partial class PreviewController : ControllerBase
     {
         private readonly IPathManager _pathManager;

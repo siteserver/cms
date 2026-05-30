@@ -14,11 +14,7 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteAdministratorUpdate)]
         public async Task<ActionResult<Administrator>> Update([FromRoute] int id, [FromBody] Administrator administrator)
         {
-            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators))
-            {
-                return Unauthorized();
-            }
-            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
+            if (!await IsAdministratorManagementAllowedAsync())
             {
                 return Unauthorized();
             }

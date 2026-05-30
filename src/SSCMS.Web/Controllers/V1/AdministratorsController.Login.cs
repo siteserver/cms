@@ -14,6 +14,17 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteActionsLogin)]
         public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
         {
+            if (request == null)
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
+
+            var ipAddress = PageUtils.GetIpAddress(Request);
+            if (!TryConsumeLoginAttempt(request.Account, ipAddress, out var retryAfterSeconds))
+            {
+                return this.Error($"请求过于频繁，请在{retryAfterSeconds}秒后重试");
+            }
+
             var (administrator, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
 
             if (administrator == null)
@@ -29,6 +40,7 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             administrator = await _administratorRepository.GetByUserNameAsync(userName);
+            ClearLoginRateLimit(request.Account, ipAddress);
             await _administratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(administrator); // 记录最后登录时间、失败次数清零
             var token = _authManager.AuthenticateAdministrator(administrator, request.IsAutoLogin);
 
@@ -60,7 +72,7 @@ namespace SSCMS.Web.Controllers.V1
 
             return new LoginResult
             {
-                Administrator = administrator,
+                Administrator = LoginAdministrator.From(administrator),
                 AccessToken = token,
                 SessionId = sessionId,
                 IsEnforcePasswordChange = isEnforcePasswordChange

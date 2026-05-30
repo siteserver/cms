@@ -116,10 +116,22 @@ namespace SSCMS.Core.Services
                 return (false, string.Empty, Constants.ErrorImageSizeAllowed);
             }
 
+            byte[] bytes;
+            await using (var stream = file.OpenReadStream())
+            {
+                await using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                bytes = memoryStream.ToArray();
+            }
+            if (!ImageUtils.IsValidImage(bytes))
+            {
+                return (false, string.Empty, Constants.ErrorImageExtensionAllowed);
+            }
+
             var localDirectoryPath = await GetUploadDirectoryPathAsync(site, UploadType.Image);
             var filePath = PathUtils.Combine(localDirectoryPath, GetUploadFileName(site, fileName));
 
-            await UploadAsync(file, filePath);
+            await UploadAsync(bytes, filePath);
 
             if (site.IsImageAutoResize)
             {

@@ -19,6 +19,10 @@ namespace SSCMS.Web.Controllers.V1
             {
                 return Unauthorized();
             }
+            if (!TryValidateQueryRequest(request, out var queryErrorMessage))
+            {
+                return this.Error(queryErrorMessage);
+            }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);

@@ -15,15 +15,15 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(RouteInstall)]
         public async Task<ActionResult<BoolResult>> Install([FromBody] InstallRequest request)
         {
-            if (string.IsNullOrEmpty(request.SecurityKey) ||
+            if (request == null ||
                 string.IsNullOrEmpty(request.UserName) ||
                 string.IsNullOrEmpty(request.Password))
             {
                 return this.Error("系统参数不足");
             }
-            if (_settingsManager.SecurityKey != request.SecurityKey)
+            if (!TryValidateAgentSecurityKey(request.SecurityKey, out var securityKeyErrorMessage))
             {
-                return this.Error("SecurityKey不正确");
+                return this.Error(securityKeyErrorMessage);
             }
             var (success, errorMessage) = await _administratorRepository.InsertValidateAsync(request.UserName, request.Password, string.Empty, string.Empty);
             if (!success)

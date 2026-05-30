@@ -13,6 +13,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         [HttpGet, Route(RouteActionsListImage)]
         public async Task<ActionResult<ListImageResult>> ListImage([FromQuery] ListImageRequest request)
         {
+            if (!await HasSiteAccessAsync(request.SiteId))
+            {
+                return Unauthorized();
+            }
+
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             var directoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);

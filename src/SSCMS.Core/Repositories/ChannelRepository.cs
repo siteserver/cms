@@ -230,7 +230,7 @@ namespace SSCMS.Core.Repositories
                     whereStringBuilder.Append(" AND (");
                     foreach (var theGroup in groupArr)
                     {
-                        var trimGroup = theGroup.Trim();
+                        var trimGroup = Utilities.FilterSql(theGroup.Trim());
 
                         whereStringBuilder.Append(
                                 $" (siteserver_Channel.GroupNames = '{trimGroup}' OR {DbUtils.GetInStr(_settingsManager.DatabaseType, "siteserver_Channel.GroupNames", trimGroup + ",")} OR {DbUtils.GetInStr(_settingsManager.DatabaseType, "siteserver_Channel.GroupNames", "," + trimGroup + ",")} OR {DbUtils.GetInStr(_settingsManager.DatabaseType, "siteserver_Channel.GroupNames", "," + trimGroup)}) OR ");

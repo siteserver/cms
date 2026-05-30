@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
 using SqlKata;
+using SSCMS.Core.Services;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -368,6 +369,11 @@ namespace SSCMS.Core.Repositories
 
             if (!string.IsNullOrEmpty(where))
             {
+                if (!DatabaseManager.IsSafeRawSqlCondition(where))
+                {
+                    throw new InvalidOperationException("Unsafe raw SQL condition.");
+                }
+
                 query.WhereRaw(where);
             }
 

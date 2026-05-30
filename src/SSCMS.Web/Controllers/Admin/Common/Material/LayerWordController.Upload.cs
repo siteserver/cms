@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
 {
     public partial class LayerWordController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<NameTitle>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {

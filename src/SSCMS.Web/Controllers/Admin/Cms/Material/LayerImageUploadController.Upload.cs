@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Utils;
 
@@ -9,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class LayerImageUploadController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] int siteId, [FromForm] IFormFile file)
         {
@@ -29,6 +30,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             if (!_pathManager.IsImageSizeAllowed(site, file.Length))
             {
                 return this.Error(Constants.ErrorImageSizeAllowed);
+            }
+            if (!await ImageUtils.IsValidImageAsync(file))
+            {
+                return this.Error(Constants.ErrorImageExtensionAllowed);
             }
 
             var materialFileName = PathUtils.GetMaterialFileName(fileName);

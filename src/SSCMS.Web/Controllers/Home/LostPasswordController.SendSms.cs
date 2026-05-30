@@ -11,7 +11,18 @@ namespace SSCMS.Web.Controllers.Home
         [HttpPost, Route(RouteSendSms)]
         public async Task<ActionResult<BoolResult>> SendSms([FromBody] SendSmsRequest request)
         {
-            var user = await _userRepository.GetByMobileAsync(request.Mobile);
+            if (request == null || string.IsNullOrWhiteSpace(request.Mobile))
+            {
+                return this.Error("请输入有效的手机号码");
+            }
+
+            var mobile = request.Mobile.Trim();
+            if (!SmsRateLimitUtils.TryConsume(_cacheManager, typeof(LostPasswordController), mobile, PageUtils.GetIpAddress(Request), out var retryAfterSeconds))
+            {
+                return this.Error($"请求过于频繁，请在{retryAfterSeconds}秒后重试");
+            }
+
+            var user = await _userRepository.GetByMobileAsync(mobile);
 
             if (user == null)
             {
@@ -26,13 +37,13 @@ namespace SSCMS.Web.Controllers.Home
 
             var code = StringUtils.GetRandomInt(100000, 999999);
             (success, errorMessage) =
-                await _smsManager.SendSmsAsync(request.Mobile, SmsCodeType.ChangePassword, code);
+                await _smsManager.SendSmsAsync(mobile, SmsCodeType.ChangePassword, code);
             if (!success)
             {
                 return this.Error(errorMessage);
             }
 
-            var cacheKey = GetSmsCodeCacheKey(request.Mobile);
+            var cacheKey = GetSmsCodeCacheKey(mobile);
             _cacheManager.AddOrUpdateAbsolute(cacheKey, code, 10);
 
             return new BoolResult

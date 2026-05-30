@@ -12,11 +12,7 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> List([FromQuery] ListRequest request)
         {
-            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators))
-            {
-                return Unauthorized();
-            }
-            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
+            if (!await IsAdministratorManagementAllowedAsync())
             {
                 return Unauthorized();
             }

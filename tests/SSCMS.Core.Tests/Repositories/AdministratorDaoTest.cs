@@ -60,7 +60,7 @@ namespace SSCMS.Core.Tests.Repositories
 
             Assert.NotNull(entity);
             Assert.True(!string.IsNullOrWhiteSpace(userInfo.Password));
-            Assert.True(userInfo.PasswordFormat == PasswordFormat.SM4);
+            Assert.True(userInfo.PasswordFormat == PasswordFormat.Hashed);
             Assert.True(!string.IsNullOrWhiteSpace(userInfo.PasswordSalt));
 
             userInfo = await _userRepository.GetByUserNameAsync(TestUserName);

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Utils;
@@ -18,6 +19,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
             }
 
             var filePath = PathUtils.Combine(_pathManager.ContentRootPath, request.FileUrl);
+            if (!DirectoryUtils.IsInDirectory(_pathManager.ContentRootPath, filePath))
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
+
             FileUtils.DeleteFileIfExists(filePath);
 
             return new BoolResult

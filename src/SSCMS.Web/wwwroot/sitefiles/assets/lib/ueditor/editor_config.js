@@ -123,9 +123,9 @@
         saveInterval: 9999999999999,
         allHtmlEnabled: !1,
         pageBreakTag: "[SITESERVER_PAGE]",
-        xssFilterRules: false,
-        inputXssFilter: false,
-        outputXssFilter: false,
+        xssFilterRules: true,
+        inputXssFilter: true,
+        outputXssFilter: true,
         whitList: {
             a: ["target", "href", "title", "class", "style", "name"],
             abbr: ["title", "class", "style"],

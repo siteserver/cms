@@ -39,11 +39,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             content.LastEditAdminId = _authManager.AdminId;
             content.UserId = _authManager.UserId;
 
-            content.Checked = request.Content.CheckedLevel >= site.CheckContentLevel;
-            if (content.Checked)
-            {
-                content.CheckedLevel = 0;
-            }
+            (content.Checked, content.CheckedLevel) = await CheckManager.GetAllowedCheckStateAsync(_authManager, site, channel.Id, request.Content.CheckedLevel);
 
             await _contentRepository.InsertAsync(site, channel, content);
 

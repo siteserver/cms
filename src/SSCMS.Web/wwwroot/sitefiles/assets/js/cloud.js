@@ -1,7 +1,8 @@
 var CLOUD_ACCESS_TOKEN_NAME = 'ss_cloud_access_token';
 var CLOUD_USER_NAME = 'ss_cloud_user_name';
-var $cloudToken = localStorage.getItem(CLOUD_ACCESS_TOKEN_NAME);
+var $cloudToken = sessionStorage.getItem(CLOUD_ACCESS_TOKEN_NAME);
 var $cloudUserName = localStorage.getItem(CLOUD_USER_NAME);
+localStorage.removeItem(CLOUD_ACCESS_TOKEN_NAME);
 
 var cloud = _.extend(axios.create({
   baseURL: 'http://localhost:6060/v7',
@@ -134,13 +135,21 @@ var cloud = _.extend(axios.create({
 
   logout: function() {
     localStorage.removeItem(CLOUD_USER_NAME);
+    sessionStorage.removeItem(CLOUD_ACCESS_TOKEN_NAME);
     localStorage.removeItem(CLOUD_ACCESS_TOKEN_NAME);
+    $cloudToken = null;
+    $cloudUserName = null;
+    this.defaults.headers.Authorization = '';
   },
 
   login: function(userName, token) {
     if (userName && token) {
       localStorage.setItem(CLOUD_USER_NAME, userName);
-      localStorage.setItem(CLOUD_ACCESS_TOKEN_NAME, token);
+      sessionStorage.setItem(CLOUD_ACCESS_TOKEN_NAME, token);
+      localStorage.removeItem(CLOUD_ACCESS_TOKEN_NAME);
+      $cloudToken = token;
+      $cloudUserName = userName;
+      this.defaults.headers.Authorization = "Bearer " + token;
     } else {
       this.logout();
     }

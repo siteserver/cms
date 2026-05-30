@@ -12,7 +12,16 @@ namespace SSCMS.Web.Controllers.Stl
         [HttpPost, Route(Constants.RouteStlActionsHits)]
         public async Task<ActionResult<IntResult>> Submit([FromBody] SubmitRequest request)
         {
-            
+            if (request == null)
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
+
+            if (!TryConsumeRequestQuota(PageUtils.GetIpAddress(Request), out var retryAfterSeconds))
+            {
+                return this.Error($"请求过于频繁，请在{retryAfterSeconds}秒后重试");
+            }
+
             try
             {
                 var hits = await _contentRepository.GetHitsAsync(request.SiteId, request.ChannelId, request.ContentId);

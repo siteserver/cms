@@ -14,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteUpdate)]
         public async Task<ActionResult<SitesResult>> Edit([FromBody] EditRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSites))
+            if (!await HasSiteManagementPermissionAsync(request.SiteId))
             {
                 return Unauthorized();
             }

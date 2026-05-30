@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
 {
     public partial class LayerVideoController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUploadVideo)]
         public async Task<ActionResult<UploadResult>> UploadVideo([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {

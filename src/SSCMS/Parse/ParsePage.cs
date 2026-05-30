@@ -38,6 +38,7 @@ namespace SSCMS.Parse
         public bool IsLocal { get; set; }
         public EditMode EditMode { get; }
         public string IncludeFile { get; set; }
+        public int IncludeDepth { get; set; }
         public int EditableIndex { get; set; }
         public List<Editable> Editables { get; }
 
@@ -60,6 +61,7 @@ namespace SSCMS.Parse
                 HeadCodes = new SortedDictionary<string, string>(HeadCodes),
                 BodyCodes = new SortedDictionary<string, string>(BodyCodes),
                 FootCodes = new SortedDictionary<string, string>(FootCodes),
+                IncludeDepth = IncludeDepth,
                 IsLocal = IsLocal
             };
         }
@@ -74,6 +76,7 @@ namespace SSCMS.Parse
             SpecialId = specialId;
             IsLocal = false;
             EditMode = editMode;
+            IncludeDepth = 0;
             EditableIndex = 0;
             Editables = new List<Editable>();
             HeadCodes = new SortedDictionary<string, string>();

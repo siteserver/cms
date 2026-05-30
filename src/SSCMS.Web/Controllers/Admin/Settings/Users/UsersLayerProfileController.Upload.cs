@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     public partial class UsersLayerProfileController
     {
-        [RequestSizeLimit(long.MaxValue)]
+        [RequestSizeLimit(Constants.MaxUploadRequestSize)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int userId, [FromForm] IFormFile file)
         {
@@ -23,6 +23,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             var fileName = _pathManager.GetUploadFileName(file.FileName);
             var filePath = _pathManager.GetUserUploadPath(userId, fileName);
             if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
+            {
+                return this.Error(Constants.ErrorImageExtensionAllowed);
+            }
+            if (!await ImageUtils.IsValidImageAsync(file))
             {
                 return this.Error(Constants.ErrorImageExtensionAllowed);
             }

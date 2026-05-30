@@ -38,6 +38,8 @@ namespace SSCMS.Web.Controllers.Home
                     user.MobileVerified = true;
                     await _userRepository.UpdateAsync(user);
                 }
+
+                _cacheManager.Remove(codeCacheKey);
             }
             else
             {
