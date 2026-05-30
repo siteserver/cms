@@ -1,5 +1,11 @@
-FROM nginx:latest
+FROM nginx:stable-alpine-slim@sha256:2c605dbeab79a6b2a63340474fe58119d0ef95bdc4b1f41df0aa689659b3d13b
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# docker build -f Dockerfile.nginx -t sscms/nginx .
+RUN chown -R nginx:nginx /var/cache/nginx /var/run
+
+USER nginx
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["nginx", "-t"]
+
+# docker build -f docker/Dockerfile.nginx -t sscms/nginx:7.4.0 docker
