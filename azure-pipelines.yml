@@ -153,6 +153,7 @@ jobs:
   - script: docker build -f docker/Dockerfile.core --no-cache -t $(imageName):latest -t $(imageName):$(productVersion) .
   - task: Docker@2
     displayName: Push image
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     inputs:
       containerRegistry: |
         docker
