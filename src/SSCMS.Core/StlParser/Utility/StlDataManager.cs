@@ -56,7 +56,7 @@ namespace SSCMS.Core.StlParser.Utility
                         if (topLevel < channel.ParentsCount)
                         {
                             var parentIdStrList = ListUtils.GetStringList(ListUtils.ToString(channel.ParentsPath));
-                            if (parentIdStrList[topLevel] != null)
+                            if (topLevel < parentIdStrList.Count && parentIdStrList[topLevel] != null)
                             {
                                 var parentIdStr = parentIdStrList[topLevel];
                                 theChannelId = TranslateUtils.ToInt(parentIdStr);
