@@ -25,6 +25,21 @@ namespace SSCMS.Core.Plugins
             Types = new ConcurrentDictionary<Type, IEnumerable<Type>>();
         }
 
+        private static readonly System.Text.RegularExpressions.Regex PluginIdRegex =
+            new System.Text.RegularExpressions.Regex(@"^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$");
+
+        /// <summary>
+        /// 插件 ID 必须形如 publisher.name，且对应目录必须是插件根目录的直接子目录（防止路径穿越删除/覆盖任意目录）。
+        /// </summary>
+        public static bool IsValidPluginId(string pluginsPath, string pluginId)
+        {
+            if (string.IsNullOrEmpty(pluginId) || !PluginIdRegex.IsMatch(pluginId)) return false;
+            var pluginPath = PathUtils.Combine(pluginsPath, pluginId);
+            return DirectoryUtils.IsInDirectory(pluginsPath, pluginPath) &&
+                   !string.Equals(Path.GetFullPath(pluginsPath).TrimEnd(Path.DirectorySeparatorChar),
+                       Path.GetFullPath(pluginPath).TrimEnd(Path.DirectorySeparatorChar));
+        }
+
         public static Assembly LoadAssembly(string assemblyPath)
         {
             //var loadContext = new PluginLoadContext(assemblyPath);

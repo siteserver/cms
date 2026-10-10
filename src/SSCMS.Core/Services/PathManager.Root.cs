@@ -165,10 +165,21 @@ namespace SSCMS.Core.Services
             return path;
         }
 
+        /// <summary>
+        /// 确保路径位于临时目录内；越界时返回临时目录下一个不存在的文件路径，
+        /// 使调用方的 IsFileExists/ReadText/Delete 自然失效而无需逐个修改（#3853）。
+        /// </summary>
+        private static string EnsureInTemporaryDirectory(string rootPath, string path)
+        {
+            if (DirectoryUtils.IsInDirectory(rootPath, path)) return path;
+            return PathUtils.Combine(rootPath, "__invalid_path__", StringUtils.Guid());
+        }
+
         public string GetTemporaryFilesPath(params string[] paths)
         {
+            var rootPath = GetSiteFilesPath(DirectoryUtils.SiteFiles.TemporaryFiles);
             var path = GetSiteFilesPath(DirectoryUtils.SiteFiles.TemporaryFiles, PathUtils.Combine(paths));
-            return path;
+            return EnsureInTemporaryDirectory(rootPath, path);
         }
 
         public async Task<string> WriteTemporaryTextAsync(string value)
@@ -263,7 +274,7 @@ namespace SSCMS.Core.Services
     totalNum: {totalNum},
     pageCount: {pageCount},
     currentPageIndex: {currentPageIndex},
-    stlPageContentsElement: '{_settingsManager.Encrypt(stlPageContentsElement)}'
+    stlPageContentsElement: '{SSCMS.Core.Utils.StlSignUtils.SignedEncrypt(_settingsManager, stlPageContentsElement)}'
 }}";
         }
 

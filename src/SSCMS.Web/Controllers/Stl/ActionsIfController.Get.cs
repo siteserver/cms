@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Utils;
@@ -21,7 +22,7 @@ namespace SSCMS.Web.Controllers.Stl
             var isSuccess = false;
             var html = string.Empty;
 
-            if (ifInfo != null)
+            if (ifInfo != null && !StlSignUtils.IsSqlBlocked(HttpContext.RequestServices, dynamicInfo.YesTemplate, dynamicInfo.NoTemplate))
             {
                 if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsUserLoggin))
                 {

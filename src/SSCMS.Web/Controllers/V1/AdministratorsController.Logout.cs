@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Utils;
 using SSCMS.Dto;
@@ -17,6 +18,8 @@ namespace SSCMS.Web.Controllers.V1
         {
             var cacheKey = Constants.GetSessionIdCacheKey(_authManager.AdminId);
             await _dbCacheRepository.RemoveAsync(cacheKey);
+            // 登出即吊销当前账号已签发的 JWT（#3894）
+            await TokenRevocationUtils.RevokeAsync(_dbCacheRepository, true, _authManager.AdminId);
 
             return new BoolResult
             {

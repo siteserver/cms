@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Core.StlParser.StlElement;
 
 namespace SSCMS.Web.Controllers.Stl
@@ -14,6 +15,10 @@ namespace SSCMS.Web.Controllers.Stl
 
             var dynamicInfo = StlDynamic.GetDynamicInfo(_settingsManager, request.Value, request.Page, user, Request.Path + Request.QueryString);
             var template = dynamicInfo.YesTemplate;
+            if (StlSignUtils.IsSqlBlocked(HttpContext.RequestServices, template))
+            {
+                return new SubmitResult { Value = false, Html = string.Empty };
+            }
 
             return new SubmitResult
             {

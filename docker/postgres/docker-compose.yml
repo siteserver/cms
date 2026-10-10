@@ -29,7 +29,7 @@ services:
     ports:
       - "80:80"
     environment:
-      SSCMS_SECURITY_KEY: e2a3d303-ac9b-41ff-9154-930710af0845
+      SSCMS_SECURITY_KEY: ${SSCMS_SECURITY_KEY:?请设置随机生成的 SSCMS_SECURITY_KEY}
       SSCMS_DATABASE_TYPE: PostgreSQL
       SSCMS_DATABASE_HOST: sscms-postgres
       SSCMS_DATABASE_USER: postgres

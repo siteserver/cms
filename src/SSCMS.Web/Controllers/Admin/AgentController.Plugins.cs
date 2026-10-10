@@ -9,14 +9,8 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpGet, Route(RoutePlugins)]
         public ActionResult<PluginsResult> Plugins([FromQuery] AgentRequest request)
         {
-            if (string.IsNullOrEmpty(request.SecurityKey))
-            {
-                return this.Error("系统参数不足");
-            }
-            if (_settingsManager.SecurityKey != request.SecurityKey)
-            {
-                return this.Error("SecurityKey不正确");
-            }
+            var agentCheck = CheckAgent(request.SecurityKey);
+            if (agentCheck != null) return agentCheck;
 
             var allPlugins = _pluginManager.Plugins;
 

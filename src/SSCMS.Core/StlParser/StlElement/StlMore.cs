@@ -98,7 +98,7 @@ function {trigger}(noMore, complete){{
                 PageChannelId = pageChannelId,
                 PageContentId = pageContentId,
                 TemplateType = templateType,
-                Template = settingsManager.Encrypt(template),
+                Template = SSCMS.Core.Utils.StlSignUtils.SignedEncrypt(settingsManager, template),
                 Page = 1,
             });
         }

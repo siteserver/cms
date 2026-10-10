@@ -14,7 +14,8 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteActionsUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromForm] IFormFile file)
         {
-            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.PluginsAdd))
+            // 插件即任意代码执行：上传/覆盖/安装/重启仅限超级管理员（#3865）
+            if (!await _authManager.IsSuperAdminAsync() || !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -49,6 +50,11 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
             DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
 
+            if (!PluginUtils.IsValidPluginId(_pathManager.PluginsPath, plugin.PluginId))
+            {
+                return this.Error("插件 ID 不合法");
+            }
+
             var oldPlugin = _pluginManager.GetPlugin(plugin.PluginId);
 
             if (oldPlugin == null)
@@ -58,6 +64,8 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
                 _pathManager.ExtractZip(filePath, pluginPath);
             }
+
+            await _authManager.AddAdminLogAsync("上传插件", $"插件:{plugin.PluginId}，文件:{fileName}");
 
             return new UploadResult
             {

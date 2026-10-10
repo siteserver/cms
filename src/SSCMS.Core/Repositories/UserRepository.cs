@@ -23,6 +23,7 @@ namespace SSCMS.Core.Repositories
         private readonly IUserGroupRepository _userGroupRepository;
         private readonly IUsersInGroupsRepository _usersInGroupsRepository;
         private readonly IDepartmentRepository _departmentRepository;
+        private readonly IDbCacheRepository _dbCacheRepository;
 
         public UserRepository(
             ISettingsManager settingsManager,
@@ -30,9 +31,11 @@ namespace SSCMS.Core.Repositories
             IConfigRepository configRepository,
             IUserGroupRepository userGroupRepository,
             IUsersInGroupsRepository usersInGroupsRepository,
-            IDepartmentRepository departmentRepository
+            IDepartmentRepository departmentRepository,
+            IDbCacheRepository dbCacheRepository
         )
         {
+            _dbCacheRepository = dbCacheRepository;
             _repository = new Repository<User>(settingsManager.Database, settingsManager.Redis);
             _cacheManager = cacheManager;
             _configRepository = configRepository;
@@ -384,6 +387,9 @@ namespace SSCMS.Core.Repositories
                 .Where(nameof(User.Id), user.Id)
                 .CachingRemove(GetCacheKeysToRemove(user))
             );
+
+            // 修改密码后吊销该用户此前签发的所有 JWT（#3894）
+            await TokenRevocationUtils.RevokeAsync(_dbCacheRepository, false, user.Id);
         }
 
         public async Task CheckAsync(IList<int> userIds)
@@ -408,7 +414,10 @@ namespace SSCMS.Core.Repositories
             foreach (var userId in userIds)
             {
                 var user = await GetByUserIdAsync(userId);
+                if (user == null) continue;
                 cacheKeys.AddRange(GetCacheKeysToRemove(user));
+                // 锁定即吊销已签发 JWT（#3894）
+                await TokenRevocationUtils.RevokeAsync(_dbCacheRepository, false, user.Id);
             }
 
             await _repository.UpdateAsync(Q

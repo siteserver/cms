@@ -139,10 +139,22 @@ namespace SSCMS.Utils
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(path))
             {
-                retVal = path.Replace("../", string.Empty);
-                retVal = retVal.Replace("..\\", string.Empty);
-                retVal = retVal.Replace("./", string.Empty);
-                retVal = retVal.Replace(".\\", string.Empty);
+                // 循环替换直到稳定，防止 "....//" 之类一次替换后重新拼出 "../" 的绕过
+                retVal = path;
+                string previous;
+                do
+                {
+                    previous = retVal;
+                    retVal = retVal.Replace("../", string.Empty);
+                    retVal = retVal.Replace("..\\", string.Empty);
+                    retVal = retVal.Replace("./", string.Empty);
+                    retVal = retVal.Replace(".\\", string.Empty);
+                    // 去掉末尾/单独的 ".." 段（如 "a/.." 或 ".."）
+                    if (retVal == ".." || retVal.EndsWith("/..") || retVal.EndsWith("\\.."))
+                    {
+                        retVal = retVal.Substring(0, retVal.Length - 2);
+                    }
+                } while (retVal != previous);
             }
             return retVal;
         }

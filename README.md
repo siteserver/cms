@@ -110,12 +110,13 @@ docker pull sscms/core:latest
 运行 SSCMS 容器
 
 ```sh
+# 先生成并妥善保存密钥（勿使用示例值）：export SSCMS_SECURITY_KEY="$(openssl rand -hex 16).$(openssl rand -hex 16)"
 docker run -d \
     --name my-sscms \
     -p 80:80 \
     --restart=always \
     -v volume-sscms:/app/wwwroot \
-    -e SSCMS_SECURITY_KEY=e2a3d303-ac9b-41ff-9154-930710af0845 \
+    -e SSCMS_SECURITY_KEY="$SSCMS_SECURITY_KEY" \
     -e SSCMS_DATABASE_TYPE=SQLite \
     sscms/core
 ```

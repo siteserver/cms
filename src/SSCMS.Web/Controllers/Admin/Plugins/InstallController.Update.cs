@@ -10,7 +10,8 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteActionsUpdate)]
         public async Task<ActionResult<BoolResult>> Update([FromBody] UploadRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.PluginsAdd))
+            // 插件即任意代码执行：上传/覆盖/安装/重启仅限超级管理员（#3865）
+            if (!await _authManager.IsSuperAdminAsync() || !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }

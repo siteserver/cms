@@ -35,4 +35,12 @@
     <PackageReference Include="KingbaseES.EntityFrameworkCore" Version="6.0.7" />
   </ItemGroup>
 
+  <!-- 安全修复：显式提升有漏洞的传递依赖 -->
+  <ItemGroup>
+    <!-- GHSA-qj66-m88j-hmgj：CacheManager / EF Core 6.0.7 引入的 6.0.1 -->
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.3" />
+    <!-- GHSA-rxg9-xrhp-64gj：StackExchange.Redis / MySql.Data 引入的 4.7.0 -->
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+  </ItemGroup>
+
 </Project>

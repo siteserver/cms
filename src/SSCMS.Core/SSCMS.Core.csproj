@@ -27,7 +27,7 @@
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
     <PackageReference Include="SixLabors.Fonts" Version="2.1.2" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.5" />
     <PackageReference Include="Senparc.Weixin" Version="6.15.8.7" />
     <PackageReference Include="Senparc.Weixin.WxOpen" Version="3.15.13" />
@@ -37,6 +37,17 @@
     <PackageReference Include="Senparc.Weixin.TenPay" Version="1.13.0" /> -->
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
     <PackageReference Include="Aliyun.OSS.SDK.NetCore" Version="2.12.0" />
+    <!-- 安全修复：显式提升有漏洞的传递依赖 -->
+    <!-- GHSA-59j7-ghrg-fj52：JwtBearer 6.0.2 引入的 IdentityModel 6.10.0 -->
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.36.0" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.36.0" />
+    <!-- GHSA-hh2w-p6rv-4g7w / GHSA-8g4q-xg66-9fp4：Senparc 引入的 System.Text.Json 8.0.0 -->
+    <PackageReference Include="System.Text.Json" Version="8.0.6" />
+    <!-- GHSA-ghhp-997w-qr28：Senparc 经 AspNetCore.Http.Abstractions 2.2.0 引入的 4.5.0 -->
+    <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
+    <!-- GHSA-7jgj-8wvc-jh57 / GHSA-cmhx-cq75-c4mj：Open-Xml-PowerTools、Semver 经 NETStandard.Library 1.6.1 引入 -->
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>

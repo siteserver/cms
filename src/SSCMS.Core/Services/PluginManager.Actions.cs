@@ -9,6 +9,15 @@ namespace SSCMS.Core.Services
     {
         public async Task InstallAsync(string userName, string name, string version, string downloadUrl)
         {
+            if (!SSCMS.Core.Plugins.PluginUtils.IsValidPluginId(DirectoryPath, $"{userName}.{name}"))
+            {
+                throw new System.ArgumentException("插件 ID 不合法");
+            }
+            if (string.IsNullOrEmpty(version) || version.Contains("..") ||
+                !System.Text.RegularExpressions.Regex.IsMatch(version, @"^[0-9A-Za-z.+-]+$"))
+            {
+                throw new System.ArgumentException("插件版本号不合法");
+            }
             var packagesPath = PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.Packages);
             var pluginPath = PathUtils.Combine(DirectoryPath, $"{userName}.{name}");
 
@@ -71,6 +80,7 @@ namespace SSCMS.Core.Services
 
         public void UnInstall(string pluginId)
         {
+            if (!SSCMS.Core.Plugins.PluginUtils.IsValidPluginId(DirectoryPath, pluginId)) return;
             var pluginPath = PathUtils.Combine(DirectoryPath, pluginId);
             try
             {

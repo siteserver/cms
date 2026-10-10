@@ -32,7 +32,7 @@ docker run -d \
     -p 80:80 \
     --restart=always \
     -v "$(pwd)"/wwwroot:/app/wwwroot \
-    -e SSCMS_SECURITY_KEY=e2a3d303-ac9b-41ff-9154-930710af0845 \
+    -e SSCMS_SECURITY_KEY="$SSCMS_SECURITY_KEY" \
     -e SSCMS_DATABASE_TYPE=SQLite \
     sscms/core:latest
 ```
@@ -55,7 +55,7 @@ docker run -d \
     -p 80:80 \
     --restart=always \
     -v volume-sscms:/app/wwwroot \
-    -e SSCMS_SECURITY_KEY=e2a3d303-ac9b-41ff-9154-930710af0845 \
+    -e SSCMS_SECURITY_KEY="$SSCMS_SECURITY_KEY" \
     -e SSCMS_DATABASE_TYPE=SQLite \
     sscms/core:latest
 ```
@@ -66,7 +66,7 @@ docker run -d \
 
 可以通过环境变量配置 SSCMS 运行参数：
 
-**`SSCMS_SECURITY_KEY`** 必填项，SSCMS 客户端与服务器端加密通讯使用的秘钥，通常为 GUID 字符串
+**`SSCMS_SECURITY_KEY`** 必填项，SSCMS 客户端与服务器端加密通讯使用的秘钥，格式为 `32位hex.32位hex`（可用 `echo "$(openssl rand -hex 16).$(openssl rand -hex 16)"` 生成），同时用作 JWT 签名密钥，请勿使用文档示例值或在多实例间共享
 
 **`SSCMS_DATABASE_TYPE`** 必填项，SSCMS 使用的数据库类型，可以为以下取值中的一种：
 

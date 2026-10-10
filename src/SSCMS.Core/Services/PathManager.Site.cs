@@ -1060,7 +1060,9 @@ namespace SSCMS.Core.Services
         public string GetTemporaryFilesPath(string relatedPath)
         {
             relatedPath = PathUtils.RemoveParentPath(relatedPath);
-            return PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
+            var rootPath = PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles);
+            var path = PathUtils.Combine(rootPath, relatedPath);
+            return EnsureInTemporaryDirectory(rootPath, path);
         }
 
         public string GetSiteTemplatesPath(string relatedPath)

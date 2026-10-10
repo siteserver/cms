@@ -364,7 +364,7 @@ function stlRedirect{elementId}(page)
                 IsDefaultDisplay = isDefaultDisplay,
                 SiteId = siteId,
                 AjaxDivId = ajaxDivId,
-                Template = settingsManager.Encrypt(template)
+                Template = SSCMS.Core.Utils.StlSignUtils.SignedEncrypt(settingsManager, template)
             });
         }
 

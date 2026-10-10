@@ -11,7 +11,9 @@ namespace SSCMS.Core.StlParser.StlElement
     {
         public static Dynamic GetDynamicInfo(ISettingsManager settingsManager, string value, int page, User user, string pathAndQuery)
         {
-            var dynamicInfo = TranslateUtils.JsonDeserialize<Dynamic>(settingsManager.Decrypt(value));
+            // 验签失败返回空 Dynamic（模板为空，不解析任何内容）
+            var decrypted = SSCMS.Core.Utils.StlSignUtils.VerifiedDecrypt(settingsManager, value);
+            var dynamicInfo = string.IsNullOrEmpty(decrypted) ? null : TranslateUtils.JsonDeserialize<Dynamic>(decrypted);
             if (dynamicInfo == null)
             {
                 dynamicInfo = new Dynamic();
@@ -40,7 +42,7 @@ namespace SSCMS.Core.StlParser.StlElement
             //运行解析以便为页面生成所需JS引用
             await parseManager.ParseInnerContentAsync(new StringBuilder(dynamicInfo.YesTemplate + dynamicInfo.NoTemplate));
 
-            var values = parseManager.SettingsManager.Encrypt(TranslateUtils.JsonSerialize(dynamicInfo));
+            var values = SSCMS.Core.Utils.StlSignUtils.SignedEncrypt(parseManager.SettingsManager, TranslateUtils.JsonSerialize(dynamicInfo));
             var display = dynamicInfo.IsInline ? "inline-block" : "block";
             var elementId = dynamicInfo.ElementId;
 

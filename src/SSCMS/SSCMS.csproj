@@ -31,9 +31,19 @@
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
     <PackageReference Include="NPOI" Version="2.6.0" />
-    <PackageReference Include="HtmlSanitizer" Version="8.0.723" />
+    <PackageReference Include="HtmlSanitizer" Version="9.2.1039" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
     <PackageReference Include="Sw.ChinaEncryptSM" Version="1.0.1" />
+  </ItemGroup>
+
+  <!-- 安全修复：显式提升有漏洞的传递依赖（由 NPOI 2.6.0 引入） -->
+  <ItemGroup>
+    <!-- GHSA-65x7-c272-7g7r：NPOI 引入的 ImageSharp 2.1.3 存在 Use After Free -->
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+    <!-- GHSA-447r-wph3-92pm -->
+    <PackageReference Include="System.Formats.Asn1" Version="8.0.2" />
+    <!-- GHSA-555c-2p6r-68mm -->
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>

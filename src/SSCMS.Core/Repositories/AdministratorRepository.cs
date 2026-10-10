@@ -20,10 +20,13 @@ namespace SSCMS.Core.Repositories
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorsInRolesRepository _administratorsInRolesRepository;
         private readonly IRoleRepository _roleRepository;
+        private readonly IDbCacheRepository _dbCacheRepository;
 
         public AdministratorRepository(ISettingsManager settingsManager, IConfigRepository configRepository,
-            IAdministratorsInRolesRepository administratorsInRolesRepository, IRoleRepository roleRepository)
+            IAdministratorsInRolesRepository administratorsInRolesRepository, IRoleRepository roleRepository,
+            IDbCacheRepository dbCacheRepository)
         {
+            _dbCacheRepository = dbCacheRepository;
             _repository = new Repository<Administrator>(settingsManager.Database, settingsManager.Redis);
             _configRepository = configRepository;
             _administratorsInRolesRepository = administratorsInRolesRepository;
@@ -142,6 +145,9 @@ namespace SSCMS.Core.Repositories
                 .Where(nameof(Administrator.Id), administrator.Id)
                 .CachingRemove(cacheKeys.ToArray())
             );
+
+            // 修改密码后吊销该管理员此前签发的所有 JWT（#3894）
+            await TokenRevocationUtils.RevokeAsync(_dbCacheRepository, true, administrator.Id);
         }
 
         public async Task LockAsync(IList<string> userNames)
@@ -150,7 +156,10 @@ namespace SSCMS.Core.Repositories
             foreach (var userName in userNames)
             {
                 var administrator = await GetByUserNameAsync(userName);
+                if (administrator == null) continue;
                 cacheKeys.AddRange(GetCacheKeys(administrator));
+                // 锁定即吊销已签发 JWT（#3894）
+                await TokenRevocationUtils.RevokeAsync(_dbCacheRepository, true, administrator.Id);
             }
 
             await _repository.UpdateAsync(Q

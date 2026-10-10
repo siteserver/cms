@@ -24,15 +24,18 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private readonly IAuthManager _authManager;
         private readonly IPluginManager _pluginManager;
         private readonly ICloudManager _cloudManager;
+        private readonly IPathManager _pathManager;
 
         public InstallController(
             IHostApplicationLifetime hostApplicationLifetime,
             ISettingsManager settingsManager,
             IAuthManager authManager,
             IPluginManager pluginManager,
-            ICloudManager cloudManager
+            ICloudManager cloudManager,
+            IPathManager pathManager
         )
         {
+            _pathManager = pathManager;
             _hostApplicationLifetime = hostApplicationLifetime;
             _settingsManager = settingsManager;
             _authManager = authManager;

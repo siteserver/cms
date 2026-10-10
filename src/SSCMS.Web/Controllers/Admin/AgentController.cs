@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using NSwag.Annotations;
+using SSCMS.Utils;
 using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Models;
@@ -33,8 +35,11 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IDbCacheRepository _dbCacheRepository;
         private readonly IContentRepository _contentRepository;
 
-        public AgentController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICacheManager cacheManager, ICreateManager createManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IDbCacheRepository dbCacheRepository, IContentRepository contentRepository)
+        private readonly IConfiguration _configuration;
+
+        public AgentController(IConfiguration configuration, ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICacheManager cacheManager, ICreateManager createManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IDbCacheRepository dbCacheRepository, IContentRepository contentRepository)
         {
+            _configuration = configuration;
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
@@ -46,6 +51,27 @@ namespace SSCMS.Web.Controllers.Admin
             _siteRepository = siteRepository;
             _dbCacheRepository = dbCacheRepository;
             _contentRepository = contentRepository;
+        }
+
+        /// <summary>
+        /// Agent 接口默认关闭（sscms.json 配置 "Agent": { "Enabled": true } 才启用）；
+        /// 启用后使用常量时间比较校验 SecurityKey。返回 null 表示通过。
+        /// </summary>
+        private ActionResult CheckAgent(string securityKey)
+        {
+            if (!_configuration.GetValue("Agent:Enabled", false))
+            {
+                return NotFound();
+            }
+            if (string.IsNullOrEmpty(securityKey))
+            {
+                return this.Error("系统参数不足");
+            }
+            if (!SecureCompareUtils.FixedTimeEquals(_settingsManager.SecurityKey, securityKey))
+            {
+                return this.Error("SecurityKey不正确");
+            }
+            return null;
         }
 
         public class AgentRequest

@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Enums;
@@ -19,7 +20,11 @@ namespace SSCMS.Web.Controllers.Stl
             var template = string.Empty;
             try
             {
-                template = _settingsManager.Decrypt(request.Template);
+                template = _settingsManager.VerifiedDecrypt(request.Template);
+                if (string.IsNullOrEmpty(template) || StlSignUtils.IsSqlBlocked(HttpContext.RequestServices, template))
+                {
+                    return this.Error("参数签名校验失败");
+                }
                 var pageIndex = request.Page - 1;
                 if (pageIndex < 0) pageIndex = 0;
 

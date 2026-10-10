@@ -106,6 +106,21 @@ namespace SSCMS.Web
                 };
                 x.Events = new JwtBearerEvents
                 {
+                    // 拒绝已吊销（登出/改密/锁定之前签发）的令牌（#3894）
+                    OnTokenValidated = async (context) =>
+                    {
+                        var principal = context.Principal;
+                        var id = TranslateUtils.ToInt(principal?.FindFirst(Types.Claims.UserId)?.Value);
+                        var isAdmin = principal?.IsInRole(Types.Roles.Administrator) ?? false;
+                        var dbCacheRepository = context.HttpContext.RequestServices.GetService<SSCMS.Repositories.IDbCacheRepository>();
+                        var issuedAt = context.SecurityToken is System.IdentityModel.Tokens.Jwt.JwtSecurityToken jwt
+                            ? jwt.IssuedAt
+                            : DateTime.MinValue;
+                        if (await SSCMS.Core.Utils.TokenRevocationUtils.IsRevokedAsync(dbCacheRepository, isAdmin, id, issuedAt))
+                        {
+                            context.Fail("Token revoked");
+                        }
+                    },
                     OnMessageReceived = (context) =>
                     {
                         if (!context.Request.Query.TryGetValue("access_token", out var values))

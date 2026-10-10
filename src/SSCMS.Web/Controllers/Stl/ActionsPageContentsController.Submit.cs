@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Enums;
 
@@ -14,7 +15,11 @@ namespace SSCMS.Web.Controllers.Stl
             var user = await _authManager.GetUserAsync();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var stlPageContentsElement = _settingsManager.Decrypt(request.StlPageContentsElement);
+            var stlPageContentsElement = _settingsManager.VerifiedDecrypt(request.StlPageContentsElement);
+            if (site == null || string.IsNullOrEmpty(stlPageContentsElement) || StlSignUtils.IsSqlBlocked(HttpContext.RequestServices, stlPageContentsElement))
+            {
+                return new SubmitResult { Html = string.Empty };
+            }
 
             var channel = await _channelRepository.GetAsync(request.PageChannelId);
             var template = await _templateRepository.GetAsync(request.TemplateId);
