@@ -127,7 +127,8 @@ namespace SSCMS.Core.Utils
             var pointF = GetWaterMarkPointF(imgSize, waterMarkPosition, 300, 60, true);
             var a = waterMarkTransparency == 10 ? string.Empty : $"{waterMarkTransparency}0";
             var color = Color.Parse("ffffff" + a);
-            return processingContext.DrawText(text, font, color, pointF);
+            return processingContext.Paint(canvas =>
+                canvas.DrawText(new RichTextOptions(font) { Origin = pointF }, text, Brushes.Solid(color), null));
         }
 
         private static IImageProcessingContext ApplyImageWaterMark(this IImageProcessingContext processingContext,
@@ -358,8 +359,11 @@ namespace SSCMS.Core.Utils
 
                 image.Mutate(ctx =>
                 {
-                    ctx.Fill(Color.Transparent);
-                    ctx.DrawText(text, font, Color.Black, new PointF(0, 0));
+                    ctx.Paint(canvas =>
+                    {
+                        canvas.Fill(Brushes.Solid(Color.Transparent));
+                        canvas.DrawText(new RichTextOptions(font) { Origin = new PointF(0, 0) }, text, Brushes.Solid(Color.Black), null);
+                    });
                     ctx.Rotate(315);
                 });
 

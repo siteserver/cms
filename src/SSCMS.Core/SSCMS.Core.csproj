@@ -26,9 +26,10 @@
     <PackageReference Include="Semver" Version="2.0.6" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
-    <PackageReference Include="SixLabors.Fonts" Version="2.1.2" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.5" />
+    <!-- GHSA-jjfr-hcj7-qf5w / GHSA-j9gm-c75j-xc9q / GHSA-j3p4-wp97-rph4 / GHSA-wmxv-xphr-5c9g / GHSA-gwg2-r3hj-4w44：ImageSharp <= 4.1.1 -->
+    <PackageReference Include="SixLabors.Fonts" Version="3.2.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="4.1.3" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="3.1.3" />
     <PackageReference Include="Senparc.Weixin" Version="6.15.8.7" />
     <PackageReference Include="Senparc.Weixin.WxOpen" Version="3.15.13" />
     <PackageReference Include="Senparc.CO2NET.AspNet" Version="1.3.3" />
