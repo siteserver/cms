@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -315,65 +315,25 @@ namespace SSCMS.Utils
             return newValue;
         }
 
+        /// <summary>
+        /// 获取客户端 IP（GJ20260924）：只使用连接的 RemoteIpAddress。
+        /// 经过反向代理时由 UseForwardedHeaders 中间件在“来源是受信代理”时把 X-Forwarded-For 写入 RemoteIpAddress，
+        /// 这里不再直接读取客户端可伪造的 X-Forwarded-For / X-Real-IP 请求头。
+        /// </summary>
         public static string GetIpAddress(HttpRequest request)
         {
-            var result = string.Empty;
+            var address = request?.HttpContext?.Connection?.RemoteIpAddress;
+            if (address == null) return "127.0.0.1";
 
-            try
+            if (address.IsIPv4MappedToIPv6)
             {
-                result = request.Headers["HTTP_X_FORWARDED_FOR"];
-                if (string.IsNullOrEmpty(result))
-                {
-                    result = request.Headers["X-Real-IP"];
-                }
-                if (string.IsNullOrEmpty(result))
-                {
-                    result = request.Headers["X-Forwarded-For"];
-                }
-                if (string.IsNullOrEmpty(result))
-                {
-                    result = request.Headers["REMOTE_ADDR"];
-                }
-                if (string.IsNullOrEmpty(result))
-                {
-                    result = request.HttpContext.Connection.RemoteIpAddress.ToString();
-                }
-
-                if (string.IsNullOrEmpty(result) || result == "::1" || result.IndexOf(".", StringComparison.Ordinal) == -1)
-                {
-                    result = "127.0.0.1";
-                }
-                else
-                {
-                    if (result.IndexOf(",", StringComparison.Ordinal) != -1)
-                    {
-                        result = result.Replace("  ", "").Replace("'", "");
-                        var temporary = result.Split(",;".ToCharArray());
-                        foreach (var t in temporary)
-                        {
-                            if (IsIpAddress(t) && t.Substring(0, 3) != "10." && t.Substring(0, 7) != "192.168" && t.Substring(0, 7) != "172.16.")
-                            {
-                                result = t;
-                            }
-                        }
-                        var str = result.Split(',');
-                        if (str.Length > 0)
-                        {
-                            result = str[0].Trim();
-                        }
-                    }
-                    else if (IsIpAddress(result))
-                    {
-                        return result;
-                    }
-                }
+                address = address.MapToIPv4();
             }
-            catch
+            if (System.Net.IPAddress.IsLoopback(address))
             {
-                // ignored
+                return "127.0.0.1";
             }
-
-            return result;
+            return address.ToString();
         }
 
         public static bool IsVisitAllowed(ISettingsManager settingsManager, HttpRequest request)

@@ -21,7 +21,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('验证码发送成功，10分钟内有效');
+      utils.success('若该手机号已绑定账号，验证码将发送至该手机，5分钟内有效');
       $this.countdown = 60;
       var interval = setInterval(function () {
         $this.countdown -= 1;

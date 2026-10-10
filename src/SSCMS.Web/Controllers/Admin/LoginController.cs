@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
@@ -63,6 +63,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string Code { get; set; }
             public bool IsPersistent { get; set; }
             public bool IsForceLogoutAndLogin {get;set;}
+            public string ForceLoginTicket { get; set; }
             public string Token { get; set; }
             public string Value { get; set; }
         }
@@ -70,6 +71,7 @@ namespace SSCMS.Web.Controllers.Admin
         public class SubmitResult
         {
             public bool IsLoginExists { get; set; }
+            public string ForceLoginTicket { get; set; }
             public Administrator Administrator { get; set; }
             public string SessionId { get; set; }
             public bool IsEnforcePasswordChange { get; set; }
@@ -84,6 +86,30 @@ namespace SSCMS.Web.Controllers.Admin
         private string GetSmsCodeCacheKey(string mobile)
         {
             return CacheUtils.GetClassKey(typeof(LoginController), nameof(Administrator), mobile);
+        }
+
+        private const int ForceLoginTicketMinutes = 2;
+
+        private static string GetForceLoginTicketKey(string ticket) =>
+            CacheUtils.GetClassKey(typeof(LoginController), "ForceLoginTicket", ticket);
+
+        private string IssueForceLoginTicket(int adminId)
+        {
+            var ticket = System.Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32)).ToLowerInvariant();
+            _cacheManager.AddOrUpdateAbsolute(GetForceLoginTicketKey(ticket), adminId, ForceLoginTicketMinutes);
+            return ticket;
+        }
+
+        /// <summary>
+        /// 消费强制登录票据，返回票据绑定的管理员 Id；无效返回 0。
+        /// </summary>
+        private int ConsumeForceLoginTicket(string ticket)
+        {
+            if (string.IsNullOrEmpty(ticket) || !System.Text.RegularExpressions.Regex.IsMatch(ticket, "^[0-9a-f]{64}$")) return 0;
+            var key = GetForceLoginTicketKey(ticket);
+            var adminId = _cacheManager.Get<int>(key);
+            _cacheManager.Remove(key);
+            return adminId;
         }
 
         private async Task<string> AdminRedirectCheckAsync()

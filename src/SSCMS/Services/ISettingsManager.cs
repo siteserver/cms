@@ -34,6 +34,7 @@ namespace SSCMS.Services
         string Decrypt(string inputString, string securityKey = null);
         void SaveSettings(bool isProtectData, bool isSafeMode, bool isDisablePlugins, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString, string adminRestrictionHost, string[] adminRestrictionAllowList, string[] adminRestrictionBlockList, bool corsIsOrigins, string[] corsOrigins);
         void ChangeDatabase(string configFilePath);
+        (bool Success, string ErrorMessage) RotateSecurityKey();
         IServiceProvider BuildServiceProvider();
         void Reload();
     }

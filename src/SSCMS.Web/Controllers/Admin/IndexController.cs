@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -100,6 +100,7 @@ namespace SSCMS.Web.Controllers.Admin
             public List<string> CssUrls { get; set; }
             public List<string> JsUrls { get; set; }
             public string Watermark { get; set; }
+            public bool IsWeakSecurityKey { get; set; }
         }
 
         public class SetLanguageRequest

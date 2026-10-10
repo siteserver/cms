@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
@@ -19,18 +19,25 @@ namespace SSCMS.Web.Controllers.Home
             var ipAddress = PageUtils.GetIpAddress(Request);
             if (request.IsSmsLogin)
             {
-                var codeCacheKey = GetSmsCodeCacheKey(request.Mobile);
-                var code = _cacheManager.Get<int>(codeCacheKey);
-                if (code == 0 || TranslateUtils.ToInt(request.Code) != code)
+                if (string.IsNullOrEmpty(request.Mobile)) return this.Error(SmsCodeGuard.ErrorInvalidCode);
+                var codeKey = GetSmsCodeCacheKey(request.Mobile);
+                var (isCodeValid, codeError) = SmsCodeGuard.Verify(_cacheManager, codeKey, request.Code, ipAddress);
+                if (!isCodeValid)
                 {
-                    return this.Error("输入的验证码有误或验证码已超时");
+                    return this.Error(codeError);
                 }
 
                 user = await _userRepository.GetByMobileAsync(request.Mobile);
 
                 if (user == null)
                 {
-                    return this.Error("此手机号码未关联用户");
+                    return this.Error(SmsCodeGuard.ErrorInvalidCode);
+                }
+
+                var (isStateValid, stateMessage) = await _userRepository.ValidateStateAsync(user);
+                if (!isStateValid)
+                {
+                    return this.Error(stateMessage);
                 }
 
                 if (!user.MobileVerified)
@@ -43,14 +50,9 @@ namespace SSCMS.Web.Controllers.Home
             {
                 if (!config.IsUserCaptchaDisabled)
                 {
-                    var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Token));
-                    if (captcha == null || string.IsNullOrEmpty(captcha.Value) || captcha.ExpireAt < DateTime.Now)
+                    if (!CaptchaUtils.Validate(_cacheManager, request.Token, request.Value))
                     {
-                        return this.Error("验证码已超时，请点击刷新验证码！");
-                    }
-                    if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value) || CaptchaUtils.IsAlreadyUsed(captcha, _cacheManager))
-                    {
-                        return this.Error("验证码不正确，请重新输入！");
+                        return this.Error(CaptchaUtils.ErrorInvalid);
                     }
                 }
                 

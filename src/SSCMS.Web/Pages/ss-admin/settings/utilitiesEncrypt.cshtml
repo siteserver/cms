@@ -23,5 +23,19 @@
   </el-col>
 </el-row>
 
+<el-divider content-position="left">轮换 SecurityKey（仅超级管理员）</el-divider>
+<el-alert type="warning" :closable="false" show-icon
+  title="轮换后系统将自动重启，所有登录状态与 API AccessToken 失效（AccessToken 会重新生成），已生成页面中的动态、搜索、下载链接需在后台执行“生成全站页面”后才能使用。">
+</el-alert>
+<div style="height: 10px"></div>
+<el-form v-on:submit.native.prevent ref="rotateForm" :model="rotateForm" size="small" label-width="160px">
+  <el-form-item label="当前登录密码" prop="password" :rules="{ required: true, message: '请输入当前登录密码' }">
+    <el-input v-model="rotateForm.password" type="password" autocomplete="current-password" show-password></el-input>
+  </el-form-item>
+  <el-form-item>
+    <el-button size="small" type="danger" v-on:click="btnRotateKeyClick">轮换 SecurityKey</el-button>
+  </el-form-item>
+</el-form>
+
 @section Scripts{
 <script src="/sitefiles/assets/js/admin/settings/utilitiesEncrypt.js" type="text/javascript"></script> }

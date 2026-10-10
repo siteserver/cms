@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -325,7 +325,8 @@ namespace SSCMS.Web.Controllers.Admin
                 CloudToken = config.CloudToken,
                 CssUrls = cssUrls,
                 JsUrls = jsUrls,
-                Watermark = watermark
+                Watermark = watermark,
+                IsWeakSecurityKey = isSuperAdmin && !EncryptUtils.IsValidSecurityKey(_settingsManager.SecurityKey).isValid
             };
         }
     }

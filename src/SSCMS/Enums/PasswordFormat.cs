@@ -15,5 +15,7 @@ namespace SSCMS.Enums
         Encrypted,
         [DataEnum(DisplayName = "可逆方式加密（SM4）")]
         SM4,
+        [DataEnum(DisplayName = "不可逆方式加密（PBKDF2-SHA256）")]
+        Pbkdf2,
     }
 }

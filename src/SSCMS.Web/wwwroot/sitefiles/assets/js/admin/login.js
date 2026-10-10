@@ -100,7 +100,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('验证码发送成功，10分钟内有效');
+      utils.success('若该手机号已绑定账号，验证码将发送至该手机，5分钟内有效');
       $this.countdown = 60;
       var interval = setInterval(function () {
         $this.countdown -= 1;
@@ -115,7 +115,7 @@ var methods = {
     });
   },
 
-  apiSubmit: function (isForceLogoutAndLogin) {
+  apiSubmit: function (forceLoginTicket) {
     var $this = this;
 
     utils.loading(this, true);
@@ -126,7 +126,8 @@ var methods = {
       mobile: this.mobile,
       code: this.code,
       isPersistent: this.isPersistent,
-      isForceLogoutAndLogin: isForceLogoutAndLogin,
+      isForceLogoutAndLogin: !!forceLoginTicket,
+      forceLoginTicket: forceLoginTicket || '',
       token: this.captchaToken,
       value: this.captchaValue
     }).then(function (response) {
@@ -138,7 +139,7 @@ var methods = {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          $this.apiSubmit(true);
+          $this.apiSubmit(res.forceLoginTicket);
         }).catch(() => {
           $this.$message({
             type: 'success',
@@ -221,11 +222,11 @@ var methods = {
 
     if (this.isSmsLogin) {
       if (!this.mobile || !this.code) return;
-      this.apiSubmit(false);
+      this.apiSubmit(null);
     } else {
       if (!this.account || !this.password) return;
       if (!this.isAdminCaptchaDisabled && !this.captchaValue) return;
-      this.apiSubmit(false);
+      this.apiSubmit(null);
     }
   }
 };

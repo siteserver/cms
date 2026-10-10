@@ -213,7 +213,7 @@ namespace SSCMS.Core.Services
                 {"siteId", site.Id.ToString()},
                 {"channelId", channelId.ToString()},
                 {"contentId", contentId.ToString()},
-                {"fileUrl", _settingsManager.Encrypt(fileUrl)}
+                {"fileUrl", SSCMS.Core.Utils.StlSignUtils.SignedEncrypt(_settingsManager, fileUrl)}
             });
         }
 
@@ -232,7 +232,7 @@ namespace SSCMS.Core.Services
             return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDownload), new NameValueCollection
             {
                 {"siteId", site.Id.ToString()},
-                {"fileUrl", _settingsManager.Encrypt(fileUrl)}
+                {"fileUrl", SSCMS.Core.Utils.StlSignUtils.SignedEncrypt(_settingsManager, fileUrl)}
             });
         }
 
@@ -241,7 +241,7 @@ namespace SSCMS.Core.Services
             var apiUrl = PageUtils.GetLocalApiUrl(Constants.ApiStlPrefix, Constants.RouteStlActionsDownload);
             return PageUtils.AddQueryString(apiUrl, new NameValueCollection
             {
-                {"filePath", _settingsManager.Encrypt(filePath)}
+                {"filePath", SSCMS.Core.Utils.StlSignUtils.SignedEncrypt(_settingsManager, filePath)}
             });
         }
 

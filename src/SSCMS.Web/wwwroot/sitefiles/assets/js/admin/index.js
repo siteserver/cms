@@ -101,6 +101,15 @@ var methods = {
         $this.cloudToken = res.cloudToken;
         $this.watermark = res.watermark;
 
+        if (res.isWeakSecurityKey) {
+          // 旧格式 SecurityKey 仅 8 字节有效，可被离线爆破（GJ20260924）
+          utils.getRootVue().$notify.warning({
+            title: '安全警告',
+            message: 'SecurityKey 为旧格式，可被离线爆破，请在“系统设置 → 实用工具 → 加密字符串”页面立即轮换 SecurityKey',
+            duration: 0
+          });
+        }
+
         if (!cloud.isAuth()) {
           cloud.login($this.cloudUserName, $this.cloudToken);
         }

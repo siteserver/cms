@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
@@ -17,36 +17,55 @@ namespace SSCMS.Core.Utils
         // private static readonly char[] Chars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
         private static readonly char[] Chars = { 'B','C','E','F','G','H','J','K','M','P','Q','R','T','V','W','X','Y','2','3','4','6','7','8','9' };
 
-        public class Captcha
+        public const int ExpireMinutes = 10;
+        public const string ErrorInvalid = "验证码不正确或已超时，请刷新验证码后重新输入！";
+
+        private static string GetServerKey(string token) =>
+            CacheUtils.GetClassKey(typeof(CaptchaUtils), "Server", token);
+
+        private static bool IsValidToken(string token) =>
+            !string.IsNullOrEmpty(token) && token.Length == 32 && System.Text.RegularExpressions.Regex.IsMatch(token, "^[0-9a-f]{32}$");
+
+        /// <summary>
+        /// 服务端保存验证码（GJ20260924）：只向客户端返回随机令牌，验证码值保存在缓存中，
+        /// 不再用 SecurityKey 加密后交给客户端往返，避免伪造与解密预言机。
+        /// </summary>
+        public static string Issue(ICacheManager cacheManager)
         {
-            public string Value { get; set; }
-            public DateTime ExpireAt { get; set; }
+            var token = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(16)).ToLowerInvariant();
+            cacheManager.AddOrUpdateAbsolute(GetServerKey(token), GetCode(), ExpireMinutes);
+            return token;
         }
 
-        public static bool IsAlreadyUsed(Captcha captcha, ICacheManager cacheManager)
+        /// <summary>
+        /// 获取验证码值用于绘制图片，不消费令牌；令牌无效返回 null。
+        /// </summary>
+        public static string GetValue(ICacheManager cacheManager, string token)
         {
-            if (captcha == null) return false;
+            if (!IsValidToken(token)) return null;
+            var value = cacheManager.Get<string>(GetServerKey(token));
+            return string.IsNullOrEmpty(value) ? null : value;
+        }
 
-            var cacheKey = CacheUtils.GetClassKey(typeof(CaptchaUtils), nameof(IsAlreadyUsed), AuthUtils.Md5ByString(TranslateUtils.JsonSerialize(captcha)));
-            if (cacheManager.Exists(cacheKey) || captcha.ExpireAt < DateTime.Now)
-            {
-                return true;
-            }
-
-            var minutes = (captcha.ExpireAt - DateTime.Now).TotalMinutes;
-            cacheManager.AddOrUpdateAbsolute(cacheKey, true, (int)minutes);
-
-            return false;
+        /// <summary>
+        /// 校验验证码。无论成功与否令牌都立即作废（一次性）。
+        /// </summary>
+        public static bool Validate(ICacheManager cacheManager, string token, string input)
+        {
+            var value = GetValue(cacheManager, token);
+            if (value == null) return false;
+            cacheManager.Remove(GetServerKey(token));
+            if (string.IsNullOrEmpty(input)) return false;
+            return SecureCompareUtils.FixedTimeEquals(value.ToUpperInvariant(), input.Trim().ToUpperInvariant());
         }
 
         public static string GetCode()
         {
             var code = string.Empty;
 
-            var r = new Random();
             for (var i = 0; i < 4; i++)
             {
-                code += Chars[r.Next(0, Chars.Length)].ToString();
+                code += Chars[System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, Chars.Length)].ToString();
             }
 
             return code;

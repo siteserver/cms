@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -11,6 +12,12 @@ namespace SSCMS.Web.Controllers.Home
         [HttpPost, Route(RouteSendSms)]
         public async Task<ActionResult<BoolResult>> SendSms([FromBody] SendSmsRequest request)
         {
+            if (string.IsNullOrEmpty(request?.Mobile)) return this.Error("请输入手机号码");
+
+            var codeKey = GetSmsCodeCacheKey(request.Mobile);
+            var (allowed, limitMessage) = SmsCodeGuard.TryBeginSend(_cacheManager, codeKey, PageUtils.GetIpAddress(Request));
+            if (!allowed) return this.Error(limitMessage);
+
             var user = await _authManager.GetUserAsync();
             if (!StringUtils.EqualsIgnoreCase(user.Mobile, request.Mobile))
             {
@@ -21,16 +28,15 @@ namespace SSCMS.Web.Controllers.Home
                 }
             }
 
-            var code = StringUtils.GetRandomInt(100000, 999999);
-            var (success, errorMessage) =
+            var code = SmsCodeGuard.NewCode();
+            var (success, _) =
                 await _smsManager.SendSmsAsync(request.Mobile, SmsCodeType.Authentication, code);
             if (!success)
             {
-                return this.Error(errorMessage);
+                return this.Error(SmsCodeGuard.ErrorSendFailed);
             }
 
-            var cacheKey = GetSmsCodeCacheKey(request.Mobile);
-            _cacheManager.AddOrUpdateAbsolute(cacheKey, code, 10);
+            SmsCodeGuard.SaveCode(_cacheManager, codeKey, code);
 
             return new BoolResult
             {

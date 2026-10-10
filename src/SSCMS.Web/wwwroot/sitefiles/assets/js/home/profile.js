@@ -103,7 +103,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.notifySuccess('验证码发送成功，10分钟内有效');
+      utils.notifySuccess('验证码发送成功，5分钟内有效');
       $this.countdown = 60;
       var interval = setInterval(function () {
         $this.countdown -= 1;

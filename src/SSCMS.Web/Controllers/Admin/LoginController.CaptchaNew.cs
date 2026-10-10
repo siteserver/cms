@@ -1,8 +1,6 @@
-﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
@@ -11,16 +9,10 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(RouteCaptcha)]
         public StringResult CaptchaNew()
         {
-            var captcha = new CaptchaUtils.Captcha
-            {
-                Value = CaptchaUtils.GetCode(),
-                ExpireAt = DateTime.Now.AddMinutes(10)
-            };
-            var json = TranslateUtils.JsonSerialize(captcha);
-
+            // 验证码值仅保存在服务端缓存，客户端只拿到随机令牌
             return new StringResult
             {
-                Value = _settingsManager.Encrypt(json)
+                Value = CaptchaUtils.Issue(_cacheManager)
             };
         }
     }

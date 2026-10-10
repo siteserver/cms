@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,20 +19,52 @@ namespace SSCMS.Web.Controllers.Admin
         {
             Administrator administrator;
             var config = await _configRepository.GetAsync();
-            if (request.IsSmsLogin)
+
+            // 强制登录必须携带首次登录成功时签发的一次性票据，不能再跳过验证码与口令校验（GJ20260924）
+            var forceAdminId = 0;
+            if (request.IsForceLogoutAndLogin)
             {
-                var codeCacheKey = GetSmsCodeCacheKey(request.Mobile);
-                var code = _cacheManager.Get<int>(codeCacheKey);
-                if (code == 0 || TranslateUtils.ToInt(request.Code) != code)
+                forceAdminId = ConsumeForceLoginTicket(request.ForceLoginTicket);
+                if (forceAdminId <= 0)
                 {
-                    return this.Error("输入的验证码有误或验证码已超时，请重试");
+                    return this.Error("登录状态已失效，请重新登录");
+                }
+            }
+
+            if (forceAdminId > 0)
+            {
+                administrator = await _administratorRepository.GetByUserIdAsync(forceAdminId);
+                if (administrator == null)
+                {
+                    return this.Error("登录状态已失效，请重新登录");
+                }
+                var (isUnlocked, lockMessage) = await _administratorRepository.ValidateLockAsync(administrator);
+                if (!isUnlocked)
+                {
+                    return this.Error(lockMessage);
+                }
+            }
+            else if (request.IsSmsLogin)
+            {
+                if (string.IsNullOrEmpty(request.Mobile)) return this.Error(SmsCodeGuard.ErrorInvalidCode);
+                var codeKey = GetSmsCodeCacheKey(request.Mobile);
+                var (isCodeValid, codeError) = SmsCodeGuard.Verify(_cacheManager, codeKey, request.Code, PageUtils.GetIpAddress(Request));
+                if (!isCodeValid)
+                {
+                    return this.Error(codeError);
                 }
 
                 administrator = await _administratorRepository.GetByMobileAsync(request.Mobile);
 
                 if (administrator == null)
                 {
-                    return this.Error("此手机号码未关联管理员，请更换手机号码");
+                    return this.Error(SmsCodeGuard.ErrorInvalidCode);
+                }
+
+                var (isUnlocked, lockMessage) = await _administratorRepository.ValidateLockAsync(administrator);
+                if (!isUnlocked)
+                {
+                    return this.Error(lockMessage);
                 }
 
                 if (!administrator.MobileVerified)
@@ -43,16 +75,11 @@ namespace SSCMS.Web.Controllers.Admin
             }
             else
             {
-                if (!request.IsForceLogoutAndLogin && !config.IsAdminCaptchaDisabled)
+                if (!config.IsAdminCaptchaDisabled)
                 {
-                    var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Token));
-                    if (captcha == null || string.IsNullOrEmpty(captcha.Value) || captcha.ExpireAt < DateTime.Now)
+                    if (!CaptchaUtils.Validate(_cacheManager, request.Token, request.Value))
                     {
-                        return this.Error("验证码已超时，请点击刷新验证码！");
-                    }
-                    if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value) || CaptchaUtils.IsAlreadyUsed(captcha, _cacheManager))
-                    {
-                        return this.Error("验证码不正确，请重新输入！");
+                        return this.Error(CaptchaUtils.ErrorInvalid);
                     }
                 }
 
@@ -75,25 +102,27 @@ namespace SSCMS.Web.Controllers.Admin
                 administrator = await _administratorRepository.GetByUserNameAsync(userName);
             }
 
+            var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);
+            if (forceAdminId == 0)
+            {
+                var cacheState = await _dbCacheRepository.GetValueAndCreatedDateAsync(cacheKey);
+                if (!string.IsNullOrEmpty(cacheState.Item1) && cacheState.Item2 > DateTime.Now.AddMinutes(-30))
+                {
+                    // 已完成口令/验证码校验，签发一次性强制登录票据，由用户确认后携带票据再次提交
+                    return new SubmitResult
+                    {
+                        IsLoginExists = true,
+                        ForceLoginTicket = IssueForceLoginTicket(administrator.Id)
+                    };
+                }
+            }
+
             await _administratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(administrator); // 记录最后登录时间、失败次数清零
 
             var token = _authManager.AuthenticateAdministrator(administrator, request.IsPersistent);
 
             await _statRepository.AddCountAsync(StatType.AdminLoginSuccess);
             await _logRepository.AddAdminLogAsync(administrator, PageUtils.GetIpAddress(Request), Constants.ActionsLoginSuccess);
-
-            var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);
-            if (!request.IsForceLogoutAndLogin)
-            {
-                var cacheState = await _dbCacheRepository.GetValueAndCreatedDateAsync(cacheKey);
-                if (!string.IsNullOrEmpty(cacheState.Item1) && cacheState.Item2 > DateTime.Now.AddMinutes(-30))
-                {
-                    return new SubmitResult
-                    {
-                        IsLoginExists = true,
-                    };
-                }
-            }
 
             var isEnforcePasswordChange = false;
             var sessionId = StringUtils.Guid();

@@ -226,8 +226,55 @@ namespace SSCMS.Web
             }
         }
 
+        private ForwardedHeadersOptions GetForwardedHeadersOptions()
+        {
+            var options = new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+                ForwardLimit = 1
+            };
+            // 默认 KnownProxies 已包含 IPv4/IPv6 loopback
+            var trustedProxies = _config.GetSection("AdminRestriction:TrustedProxies").Get<string[]>();
+            if (trustedProxies != null)
+            {
+                foreach (var proxy in trustedProxies)
+                {
+                    if (string.IsNullOrWhiteSpace(proxy)) continue;
+                    var value = proxy.Trim();
+                    if (value.Contains('/'))
+                    {
+                        var parts = value.Split('/');
+                        if (System.Net.IPAddress.TryParse(parts[0], out var prefix) && int.TryParse(parts[1], out var length))
+                        {
+                            options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(prefix, length));
+                        }
+                    }
+                    else if (System.Net.IPAddress.TryParse(value, out var address))
+                    {
+                        options.KnownProxies.Add(address);
+                    }
+                }
+            }
+            else if (SSCMS.Core.Services.SettingsManager.RunningInContainer)
+            {
+                // 容器部署时反向代理（如 docker/cluster 中的 nginx）位于 Docker 私有网段，而不是 loopback。
+                // 未显式配置 TrustedProxies 时默认信任私有网段，避免所有请求都被识别为代理 IP，
+                // 导致后台白名单误判、短信/验证码按 IP 限频变成全站共享。
+                // 显式配置非空的 TrustedProxies 后以配置为准（不再默认信任私有网段）。
+                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("10.0.0.0"), 8));
+                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("172.16.0.0"), 12));
+                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("192.168.0.0"), 16));
+                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("fc00::"), 7));
+            }
+            return options;
+        }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository, IOptions<SenparcSetting> senparcSetting)
         {
+            // 放在管道最前：只有来源是受信代理（默认仅 loopback，可在 sscms.json 的
+            // AdminRestriction:TrustedProxies 配置）时才采用 X-Forwarded-For，防止客户端伪造 IP 绕过白名单
+            app.UseForwardedHeaders(GetForwardedHeadersOptions());
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -293,10 +340,8 @@ namespace SSCMS.Web
 
             app.UseCors(CorsPolicy);
 
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
+            // 后台 IP 白名单在管道层统一拦截 /api/admin、/ss-admin（GJ20260924）
+            app.UseMiddleware<AdminRestrictionMiddleware>();
 
             //app.UseHttpsRedirection();
 
@@ -348,6 +393,9 @@ namespace SSCMS.Web
             app.UseAuthorization();
 
             app.UsePluginsAsync(settingsManager, pluginManager).GetAwaiter().GetResult();
+
+            // 启动安全检查：迁移可逆管理员口令、提示弱 SecurityKey（GJ20260924）
+            _ = Task.Run(() => SSCMS.Web.StartupSecurityTasks.RunAsync(app.ApplicationServices));
 
             app.UseEndpoints(endpoints =>
             {

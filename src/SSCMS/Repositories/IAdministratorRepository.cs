@@ -51,6 +51,8 @@ namespace SSCMS.Repositories
 
         Task<(bool Success, string ErrorMessage)> ValidateLockAsync(Administrator administrator);
 
+        Task<int> MigrateLegacyPasswordsAsync();
+
         Task<int> GetCountAsync();
 
         Task<List<Administrator>> GetAdministratorsAsync(int offset, int limit);

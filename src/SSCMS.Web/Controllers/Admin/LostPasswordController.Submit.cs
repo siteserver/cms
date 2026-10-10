@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Utils;
 
@@ -13,18 +14,19 @@ namespace SSCMS.Web.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var codeCacheKey = GetSmsCodeCacheKey(request.Mobile);
-            var code = _cacheManager.Get<int>(codeCacheKey);
-            if (code == 0 || TranslateUtils.ToInt(request.Code) != code)
+            if (string.IsNullOrEmpty(request?.Mobile)) return this.Error(SmsCodeGuard.ErrorInvalidCode);
+
+            var codeKey = GetSmsCodeCacheKey(request.Mobile);
+            var (isCodeValid, codeError) = SmsCodeGuard.Verify(_cacheManager, codeKey, request.Code, PageUtils.GetIpAddress(Request), false);
+            if (!isCodeValid)
             {
-                return this.Error("输入的验证码有误或验证码已超时，请重试");
+                return this.Error(codeError);
             }
 
             var administrator = await _administratorRepository.GetByMobileAsync(request.Mobile);
-
             if (administrator == null)
             {
-                return this.Error("此手机号码未关联管理员，请更换手机号码");
+                return this.Error(SmsCodeGuard.ErrorInvalidCode);
             }
 
             var password = request.Password;
@@ -34,6 +36,7 @@ namespace SSCMS.Web.Controllers.Admin
                 return this.Error($"更改密码失败：{errorMessage}");
             }
 
+            SmsCodeGuard.Invalidate(_cacheManager, codeKey);
             await _authManager.AddAdminLogAsync("重设管理员密码", $"管理员:{administrator.UserName}");
 
             return new BoolResult

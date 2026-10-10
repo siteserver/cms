@@ -128,6 +128,44 @@ namespace SSCMS.Core.Services
             Reload();
         }
 
+        /// <summary>
+        /// 轮换 SecurityKey（GJ20260924）：生成 hex32.hex32 格式新密钥写入 sscms.json，
+        /// IsProtectData 开启时用新密钥重新加密数据库/Redis 连接串。调用方需随后重启服务，
+        /// 使 JWT 校验密钥同步更新（所有已登录令牌将失效）。
+        /// </summary>
+        public (bool Success, string ErrorMessage) RotateSecurityKey()
+        {
+            if (!string.IsNullOrEmpty(GetEnvironmentVariable(EnvSecurityKey)) || RunningInContainer)
+            {
+                return (false, $"SecurityKey 来自环境变量 {SSCMS.Configuration.Constants.EnvironmentPrefix}{EnvSecurityKey}，请修改环境变量后重启容器");
+            }
+
+            var path = PathUtils.Combine(ContentRootPath, SSCMS.Configuration.Constants.ConfigFileName);
+            if (!FileUtils.IsFileExists(path))
+            {
+                return (false, "未找到配置文件 sscms.json");
+            }
+
+            var newKey = EncryptUtils.GenerateSecurityKey();
+
+            // 只改动 SecurityKey 及受其保护的字段，保留 sscms.json 中的其他配置（Agent、Stl、TrustedProxies 等）
+            var json = Newtonsoft.Json.Linq.JObject.Parse(FileUtils.ReadText(path));
+            json[nameof(SecurityKey)] = newKey;
+            if (IsProtectData)
+            {
+                json["Database"] ??= new Newtonsoft.Json.Linq.JObject();
+                json["Redis"] ??= new Newtonsoft.Json.Linq.JObject();
+                json["Database"]["Type"] = Encrypt(DatabaseType.GetValue(), newKey);
+                json["Database"]["ConnectionString"] = Encrypt(DatabaseConnectionString, newKey);
+                json["Redis"]["ConnectionString"] = Encrypt(RedisConnectionString, newKey);
+            }
+            FileUtils.WriteText(path, json.ToString(Newtonsoft.Json.Formatting.Indented));
+
+            // 配置文件热加载是异步的，这里直接切换内存中的密钥
+            SecurityKey = newKey;
+            return (true, string.Empty);
+        }
+
         public void ChangeDatabase(string configFilePath)
         {
             var configurationBuilder = new ConfigurationBuilder().AddJsonFile(configFilePath);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -161,11 +161,11 @@ namespace SSCMS.Core.Repositories
                 return (null, errorMessage);
             }
 
-            password = EncodePassword(password, PasswordFormat.SM4, out var passwordSalt);
+            password = EncodePassword(password, out var passwordSalt);
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
-            user.Id = await InsertWithoutValidationAsync(user, password, PasswordFormat.SM4, passwordSalt);
+            user.Id = await InsertWithoutValidationAsync(user, password, PasswordFormat.Pbkdf2, passwordSalt);
 
             await CacheIpAddressAsync(ipAddress);
 
@@ -179,11 +179,11 @@ namespace SSCMS.Core.Repositories
                 user.Mobile = user.UserName;
             }
 
-            password = EncodePassword(password, PasswordFormat.SM4, out var passwordSalt);
+            password = EncodePassword(password, out var passwordSalt);
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
-            return await InsertWithoutValidationAsync(user, password, PasswordFormat.SM4, passwordSalt);
+            return await InsertWithoutValidationAsync(user, password, PasswordFormat.Pbkdf2, passwordSalt);
         }
 
         private async Task<int> InsertWithoutValidationAsync(User user, string password, PasswordFormat passwordFormat, string passwordSalt)
@@ -286,73 +286,73 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        private static string EncodePassword(string password, PasswordFormat passwordFormat, out string passwordSalt)
+        /// <summary>
+        /// 新建/修改口令一律使用不可逆 PBKDF2（GJ20260924）。
+        /// </summary>
+        private static string EncodePassword(string plainPassword, out string passwordSalt)
         {
-            var retVal = string.Empty;
-            passwordSalt = string.Empty;
+            return PasswordHashUtils.Hash(PasswordHashUtils.ToMd5(plainPassword), out passwordSalt);
+        }
 
-            if (passwordFormat == PasswordFormat.Clear)
+        /// <summary>
+        /// 仅用于旧口令校验与迁移：还原 Clear/Encrypted/SM4 明文，无法还原时返回 null。
+        /// </summary>
+        private static string TryDecodeLegacyPassword(string password, PasswordFormat passwordFormat, string passwordSalt)
+        {
+            try
             {
-                retVal = password;
+                string plain = null;
+                if (passwordFormat == PasswordFormat.Clear)
+                {
+                    plain = password;
+                }
+                else if (passwordFormat == PasswordFormat.Encrypted && !string.IsNullOrEmpty(passwordSalt))
+                {
+                    plain = DesEncryptor.DecryptStringBySecretKey(password, passwordSalt);
+                }
+                else if (passwordFormat == PasswordFormat.SM4 && !string.IsNullOrEmpty(passwordSalt))
+                {
+                    plain = EncryptUtils.Decrypt(password, passwordSalt);
+                }
+                return string.IsNullOrEmpty(plain) ? null : plain;
             }
-            else if (passwordFormat == PasswordFormat.Hashed)
+            catch
             {
-                passwordSalt = GenerateSalt();
+                return null;
+            }
+        }
 
+        private static string LegacySha1(string password, string passwordSalt)
+        {
+            try
+            {
                 var src = Encoding.Unicode.GetBytes(password);
-                var buffer2 = Convert.FromBase64String(passwordSalt);
-                var dst = new byte[buffer2.Length + src.Length];
-                byte[] inArray = null;
-                Buffer.BlockCopy(buffer2, 0, dst, 0, buffer2.Length);
-                Buffer.BlockCopy(src, 0, dst, buffer2.Length, src.Length);
-                var algorithm = SHA1.Create(); // HashAlgorithm.Create("SHA1");
-                if (algorithm != null) inArray = algorithm.ComputeHash(dst);
-
-                if (inArray != null) retVal = Convert.ToBase64String(inArray);
+                var salt = Convert.FromBase64String(passwordSalt);
+                var dst = new byte[salt.Length + src.Length];
+                Buffer.BlockCopy(salt, 0, dst, 0, salt.Length);
+                Buffer.BlockCopy(src, 0, dst, salt.Length, src.Length);
+                using var sha1 = SHA1.Create();
+                return Convert.ToBase64String(sha1.ComputeHash(dst));
             }
-            else if (passwordFormat == PasswordFormat.Encrypted)
+            catch
             {
-                passwordSalt = GenerateSalt();
-                retVal = DesEncryptor.EncryptStringBySecretKey(password, passwordSalt);
+                return null;
             }
-            else if (passwordFormat == PasswordFormat.SM4)
-            {
-                passwordSalt = EncryptUtils.GenerateSecurityKey();
-                retVal = EncryptUtils.Encrypt(password, passwordSalt);
-            }
-            return retVal;
         }
 
-        private static string DecodePassword(string password, PasswordFormat passwordFormat, string passwordSalt)
+        /// <summary>
+        /// 只替换口令存储格式，不更新改密时间、不吊销令牌。
+        /// </summary>
+        private async Task UpgradePasswordAsync(User user, string passwordMd5)
         {
-            var retVal = string.Empty;
-            if (passwordFormat == PasswordFormat.Clear)
-            {
-                retVal = password;
-            }
-            else if (passwordFormat == PasswordFormat.Hashed)
-            {
-                throw new Exception("can not decode hashed password");
-            }
-            else if (passwordFormat == PasswordFormat.Encrypted)
-            {
-                retVal = DesEncryptor.DecryptStringBySecretKey(password, passwordSalt);
-            }
-            else if (passwordFormat == PasswordFormat.SM4)
-            {
-                retVal = EncryptUtils.Decrypt(password, passwordSalt);
-            }
-            return retVal;
-        }
-
-        private static string GenerateSalt()
-        {
-            var data = new byte[0x10];
-            // new RNGCryptoServiceProvider().GetBytes(data);
-            var rand = RandomNumberGenerator.Create();
-            rand.GetBytes(data);
-
-            return Convert.ToBase64String(data);
+            var hash = PasswordHashUtils.Hash(passwordMd5, out var salt);
+            await _repository.UpdateAsync(Q
+                .Set(nameof(User.Password), hash)
+                .Set(nameof(User.PasswordFormat), PasswordFormat.Pbkdf2.GetValue())
+                .Set(nameof(User.PasswordSalt), salt)
+                .Where(nameof(User.Id), user.Id)
+                .CachingRemove(GetCacheKeysToRemove(user))
+            );
         }
 
         public async Task<(bool success, string errorMessage)> ChangePasswordAsync(int userId, string password)
@@ -367,8 +367,8 @@ namespace SSCMS.Core.Repositories
                 return (false, $"密码不符合规则，请包含{config.UserPasswordRestriction.GetDisplayName()}");
             }
 
-            password = EncodePassword(password, PasswordFormat.SM4, out var passwordSalt);
-            await ChangePasswordAsync(userId, PasswordFormat.SM4, passwordSalt, password);
+            password = EncodePassword(password, out var passwordSalt);
+            await ChangePasswordAsync(userId, PasswordFormat.Pbkdf2, passwordSalt, password);
             return (true, string.Empty);
         }
 
@@ -501,12 +501,24 @@ namespace SSCMS.Core.Repositories
 
         public bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, PasswordFormat passwordFormat, string passwordSalt)
         {
-            var decodePassword = DecodePassword(dbPassword, passwordFormat, passwordSalt);
-            if (isPasswordMd5)
+            if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(dbPassword)) return false;
+
+            var inputMd5 = isPasswordMd5 ? password : PasswordHashUtils.ToMd5(password);
+            if (passwordFormat == PasswordFormat.Pbkdf2)
             {
-                return password == AuthUtils.Md5ByString(decodePassword);
+                return PasswordHashUtils.Verify(inputMd5, dbPassword, passwordSalt);
             }
-            return password == decodePassword;
+
+            var plain = TryDecodeLegacyPassword(dbPassword, passwordFormat, passwordSalt);
+            if (plain != null)
+            {
+                return SecureCompareUtils.FixedTimeEquals(inputMd5, PasswordHashUtils.ToMd5(plain));
+            }
+            if (passwordFormat == PasswordFormat.Hashed && !isPasswordMd5)
+            {
+                return SecureCompareUtils.FixedTimeEquals(dbPassword, LegacySha1(password, passwordSalt));
+            }
+            return false;
         }
 
         public async Task<(User user, string userName, string errorMessage)> ValidateAsync(string account, string password, bool isPasswordMd5)
@@ -539,6 +551,12 @@ namespace SSCMS.Core.Repositories
             {
                 await UpdateLastActivityDateAndCountOfFailedLoginAsync(user);
                 return (null, user.UserName, "帐号或密码错误");
+            }
+
+            // 旧格式口令（可逆或 SHA1）在登录成功后升级为 PBKDF2
+            if (userEntity.PasswordFormat != PasswordFormat.Pbkdf2)
+            {
+                await UpgradePasswordAsync(userEntity, isPasswordMd5 ? password : PasswordHashUtils.ToMd5(password));
             }
 
             return (user, user.UserName, string.Empty);

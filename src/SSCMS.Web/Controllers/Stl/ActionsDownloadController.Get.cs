@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Stl
@@ -14,7 +15,7 @@ namespace SSCMS.Web.Controllers.Stl
             {
                 if (request.SiteId.HasValue && !string.IsNullOrEmpty(request.FileUrl) && !request.ContentId.HasValue)
                 {
-                    var fileUrl = _settingsManager.Decrypt(request.FileUrl);
+                    var fileUrl = _settingsManager.VerifiedDecrypt(request.FileUrl);
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
@@ -46,7 +47,7 @@ namespace SSCMS.Web.Controllers.Stl
                 {
                     var site = await _siteRepository.GetAsync(request.SiteId.Value);
                     var sitePath = await _pathManager.GetSitePathAsync(site);
-                    var filePath = _settingsManager.Decrypt(request.FilePath);
+                    var filePath = _settingsManager.VerifiedDecrypt(request.FilePath);
                     if (!DirectoryUtils.IsInDirectory(sitePath, filePath))
                     {
                         return this.Error("下载失败，不存在此文件！");
@@ -68,7 +69,7 @@ namespace SSCMS.Web.Controllers.Stl
                 else if (!string.IsNullOrEmpty(request.FilePath))
                 {
                     var rootPath = _settingsManager.WebRootPath;
-                    var filePath = _settingsManager.Decrypt(request.FilePath);
+                    var filePath = _settingsManager.VerifiedDecrypt(request.FilePath);
                     if (!DirectoryUtils.IsInDirectory(rootPath, filePath))
                     {
                         return this.Error("下载失败，不存在此文件！");
@@ -86,7 +87,7 @@ namespace SSCMS.Web.Controllers.Stl
                 }
                 else if (request.SiteId.HasValue && request.ChannelId.HasValue && request.ContentId.HasValue && !string.IsNullOrEmpty(request.FileUrl))
                 {
-                    var fileUrl = _settingsManager.Decrypt(request.FileUrl);
+                    var fileUrl = _settingsManager.VerifiedDecrypt(request.FileUrl);
                     var site = await _siteRepository.GetAsync(request.SiteId.Value);
                     var channel = await _channelRepository.GetAsync(request.ChannelId.Value);
 

@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -43,16 +44,20 @@ namespace SSCMS.Web.Controllers.V1
                 return this.Error("对不起，表单短信验证功能已被禁用");
             }
 
-            var code = StringUtils.GetRandomInt(100000, 999999);
-            var (success, errorMessage) =
+            if (string.IsNullOrEmpty(request?.Mobile)) return this.Error("请输入手机号码");
+            var codeKey = GetSmsCodeCacheKey(form.Id, request.Mobile);
+            var (allowed, limitMessage) = SmsCodeGuard.TryBeginSend(_cacheManager, codeKey, PageUtils.GetIpAddress(Request));
+            if (!allowed) return this.Error(limitMessage);
+
+            var code = SmsCodeGuard.NewCode();
+            var (success, _) =
                 await _smsManager.SendSmsAsync(request.Mobile, SmsCodeType.Authentication, code);
             if (!success)
             {
-                return this.Error(errorMessage);
+                return this.Error(SmsCodeGuard.ErrorSendFailed);
             }
 
-            var cacheKey = GetSmsCodeCacheKey(form.Id, request.Mobile);
-            _cacheManager.AddOrUpdateAbsolute(cacheKey, code, 10);
+            SmsCodeGuard.SaveCode(_cacheManager, codeKey, code);
 
             return new BoolResult
             {

@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -38,11 +39,11 @@ namespace SSCMS.Web.Controllers.V1
             var isSmsEnabled = await _smsManager.IsSmsEnabledAsync();
             if (isSmsEnabled && form.IsSms)
             {
-                var codeCacheKey = GetSmsCodeCacheKey(form.Id, formData.Get<string>("SmsMobile"));
-                var code = _cacheManager.Get<int>(codeCacheKey);
-                if (code == 0 || TranslateUtils.ToInt(formData.Get<string>("SmsCode")) != code)
+                var codeKey = GetSmsCodeCacheKey(form.Id, formData.Get<string>("SmsMobile"));
+                var (isCodeValid, codeError) = SmsCodeGuard.Verify(_cacheManager, codeKey, formData.Get<string>("SmsCode"), PageUtils.GetIpAddress(Request));
+                if (!isCodeValid)
                 {
-                    return this.Error("输入的验证码有误或验证码已超时");
+                    return this.Error(codeError);
                 }
             }
 
