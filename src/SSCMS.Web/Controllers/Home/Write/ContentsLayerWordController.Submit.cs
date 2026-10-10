@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
@@ -14,6 +15,8 @@ namespace SSCMS.Web.Controllers.Home.Write
 {
     public partial class ContentsLayerWordController
     {
+        private const long MaxWordFileSize = 20 * 1024 * 1024; // 20MB per-file limit to prevent resource exhaustion
+
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
@@ -39,6 +42,10 @@ namespace SSCMS.Web.Controllers.Home.Write
                 if (string.IsNullOrEmpty(file.FileName) || string.IsNullOrEmpty(file.Title)) continue;
 
                 var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
+
+                var fileInfo = new FileInfo(filePath);
+                if (!fileInfo.Exists || fileInfo.Length > MaxWordFileSize) continue;
+
                 var wordManager = new WordManager(request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
                 await wordManager.ParseAsync(_pathManager, site);
 
