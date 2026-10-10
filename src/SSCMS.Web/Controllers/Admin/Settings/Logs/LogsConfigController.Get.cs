@@ -18,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 
             return new GetResult
             {
-                Config = config
+                Config = ConfigDto.From(config)
             };
         }
     }

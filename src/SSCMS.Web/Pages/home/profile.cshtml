@@ -47,9 +47,10 @@
     </el-input>
   </el-form-item>
   <el-form-item label="电子邮箱" prop="email" :rules="[
-    { type: 'email', message: '请输入有效的电子邮箱' }
+    { type: 'email', message: '请输入有效的电子邮箱' },
+    { max: 100, message: '邮箱长度不能超过100个字符' }
   ]">
-    <el-input v-model="form.email" placeholder="请输入电子邮箱"></el-input>
+    <el-input v-model="form.email" placeholder="请输入电子邮箱" maxlength="100"></el-input>
     <small class="tips">电子邮箱可用于登录、找回密码等功能</small>
   </el-form-item>
 

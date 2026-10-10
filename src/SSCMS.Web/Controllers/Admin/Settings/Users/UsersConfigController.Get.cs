@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
             return new GetResult
             {
-                Config = config,
+                Config = ConfigDto.From(config),
                 IsSmsEnabled = smsSettings.IsSms && smsSettings.IsSmsUser
             };
         }

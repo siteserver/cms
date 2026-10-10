@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.Utils;
+using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -9,14 +10,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            var adminName = _authManager.AdminName;
-            if (adminName != request.UserName &&
-                !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
+            var administrator = await _administratorRepository.GetByUserNameAsync(request.UserName);
+            if (administrator == null) return this.Error(Constants.ErrorNotFound);
+
+            // 越权校验：只能查看本人或有权管理的管理员
+            if (administrator.Id != _authManager.AdminId &&
+                !await _authManager.CanManageAdministratorAsync(administrator))
             {
                 return Unauthorized();
             }
-
-            var administrator = await _administratorRepository.GetByUserNameAsync(request.UserName);
 
             return new GetResult
             {

@@ -15,7 +15,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int userId, [FromForm] IFormFile file)
         {
             var adminId = _authManager.AdminId;
-            if (adminId != userId &&
+            if (userId > 0 && userId != adminId)
+            {
+                var target = await _administratorRepository.GetByUserIdAsync(userId);
+                if (target == null || !await _authManager.CanManageAdministratorAsync(target))
+                {
+                    return Unauthorized();
+                }
+            }
+            else if (userId <= 0 &&
                 !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();

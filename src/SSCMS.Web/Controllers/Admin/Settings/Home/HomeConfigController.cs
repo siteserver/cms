@@ -30,9 +30,25 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Home
             _tableStyleRepository = tableStyleRepository;
         }
 
+        /// <summary>
+        /// 仅返回页面所需字段，避免泄露 CloudToken 等敏感配置
+        /// </summary>
+        public class ConfigDto : SubmitRequest
+        {
+            public static ConfigDto From(Config c) => new ConfigDto
+            {
+                IsHomeClosed = c.IsHomeClosed, HomeTitle = c.HomeTitle, IsHomeLogo = c.IsHomeLogo,
+                HomeLogoUrl = c.HomeLogoUrl, HomeDefaultAvatarUrl = c.HomeDefaultAvatarUrl,
+                UserRegistrationAttributes = c.UserRegistrationAttributes,
+                IsUserRegistrationMobile = c.IsUserRegistrationMobile, IsUserRegistrationEmail = c.IsUserRegistrationEmail,
+                IsUserRegistrationGroup = c.IsUserRegistrationGroup, IsUserRegistrationDisplayName = c.IsUserRegistrationDisplayName,
+                IsHomeAgreement = c.IsHomeAgreement, HomeAgreementHtml = c.HomeAgreementHtml, HomeWelcomeHtml = c.HomeWelcomeHtml
+            };
+        }
+
         public class GetResult
         {
-            public Config Config { get; set; }
+            public ConfigDto Config { get; set; }
             public List<TableStyle> Styles { get; set; }
         }
 

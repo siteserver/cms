@@ -25,9 +25,25 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             _configRepository = configRepository;
         }
 
+        /// <summary>
+        /// 仅返回页面所需字段，避免泄露 CloudToken 等敏感配置
+        /// </summary>
+        public class ConfigDto : SubmitRequest
+        {
+            public static ConfigDto From(Config c) => new ConfigDto
+            {
+                AdminUserNameMinLength = c.AdminUserNameMinLength, AdminPasswordMinLength = c.AdminPasswordMinLength,
+                AdminPasswordRestriction = c.AdminPasswordRestriction, IsAdminLockLogin = c.IsAdminLockLogin,
+                AdminLockLoginCount = c.AdminLockLoginCount, AdminLockLoginType = c.AdminLockLoginType,
+                AdminLockLoginHours = c.AdminLockLoginHours, IsAdminEnforcePasswordChange = c.IsAdminEnforcePasswordChange,
+                AdminEnforcePasswordChangeDays = c.AdminEnforcePasswordChangeDays, IsAdminEnforceLogout = c.IsAdminEnforceLogout,
+                AdminEnforceLogoutMinutes = c.AdminEnforceLogoutMinutes, IsAdminCaptchaDisabled = c.IsAdminCaptchaDisabled
+            };
+        }
+
         public class GetResult
         {
-            public Config Config { get; set; }
+            public ConfigDto Config { get; set; }
         }
 
         public class SubmitRequest

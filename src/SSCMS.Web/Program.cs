@@ -31,7 +31,12 @@ namespace SSCMS.Web
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        .UseKestrel(options => { options.Limits.MaxRequestBodySize = long.MaxValue; })
+                        .UseKestrel(options =>
+                        {
+                            options.Limits.MaxRequestBodySize = long.MaxValue;
+                            // 不输出 Server: Kestrel 响应头，避免中间件版本信息泄露
+                            options.AddServerHeader = false;
+                        })
                         .UseIIS()
                         .UseStartup<Startup>();
                 })

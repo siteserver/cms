@@ -98,6 +98,22 @@ namespace SSCMS.Core.Repositories
             }
 
             var entity = await GetByUserIdAsync(user.Id);
+            if (entity == null)
+            {
+                return (null, "用户不存在");
+            }
+
+            // 仅对发生变化的字段做校验，避免历史数据格式不规范导致无法更新
+            var fieldValid = AccountValidateUtils.Validate(null,
+                user.DisplayName != entity.DisplayName ? user.DisplayName : null,
+                user.Email != entity.Email ? user.Email : null,
+                user.Mobile != entity.Mobile ? user.Mobile : null,
+                user.AvatarUrl != entity.AvatarUrl ? user.AvatarUrl : null);
+            if (!fieldValid.IsValid)
+            {
+                return (null, fieldValid.ErrorMessage);
+            }
+
             user.UserName = entity.UserName;
             user.Password = entity.Password;
             user.PasswordFormat = entity.PasswordFormat;
@@ -128,6 +144,12 @@ namespace SSCMS.Core.Repositories
             if (StringUtils.IsMobile(user.UserName) && string.IsNullOrEmpty(user.Mobile))
             {
                 user.Mobile = user.UserName;
+            }
+
+            var fieldValid = AccountValidateUtils.Validate(user.UserName, user.DisplayName, user.Email, user.Mobile, user.AvatarUrl);
+            if (!fieldValid.IsValid)
+            {
+                return (null, fieldValid.ErrorMessage);
             }
 
             var (success, errorMessage) = await InsertValidateAsync(user.UserName, user.Email, user.Mobile, password, ipAddress);

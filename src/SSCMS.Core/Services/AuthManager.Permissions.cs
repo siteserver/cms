@@ -168,6 +168,18 @@ namespace SSCMS.Core.Services
             return permissions.Any(permission => permissionList.Contains(permission));
         }
 
+        public async Task<bool> CanManageAdministratorAsync(Models.Administrator target)
+        {
+            if (target == null) return false;
+            if (await IsSuperAdminAsync()) return true;
+            if (!await HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators)) return false;
+
+            // 非超级管理员只能管理自己创建的管理员，且不能管理超级管理员
+            if (!StringUtils.EqualsIgnoreCase(target.CreatorUserName, AdminName)) return false;
+            var targetRoles = await _databaseManager.AdministratorsInRolesRepository.GetRolesForUserAsync(target.UserName);
+            return !_databaseManager.RoleRepository.IsConsoleAdministrator(targetRoles);
+        }
+
         public async Task<List<string>> GetAppPermissionsAsync()
         {
             var administrator = await GetAdminAsync();

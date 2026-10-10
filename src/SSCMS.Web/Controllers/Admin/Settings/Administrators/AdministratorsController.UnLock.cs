@@ -17,6 +17,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             }
 
             var adminInfo = await _administratorRepository.GetByUserIdAsync(request.Id);
+            if (adminInfo == null || !await _authManager.CanManageAdministratorAsync(adminInfo))
+            {
+                return Unauthorized();
+            }
 
             await _administratorRepository.UnLockAsync(new List<string>
             {

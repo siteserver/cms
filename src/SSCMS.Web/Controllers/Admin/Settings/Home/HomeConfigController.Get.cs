@@ -18,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Home
 
             return new GetResult
             {
-                Config = config,
+                Config = ConfigDto.From(config),
                 Styles = await _tableStyleRepository.GetUserStylesAsync()
             };
         }

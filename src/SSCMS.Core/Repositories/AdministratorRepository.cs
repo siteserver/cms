@@ -443,6 +443,9 @@ namespace SSCMS.Core.Repositories
 
         public async Task<(bool IsValid, string ErrorMessage)> InsertAsync(Administrator administrator, string password)
         {
+            var fieldValid = AccountValidateUtils.Validate(administrator.UserName, administrator.DisplayName, administrator.Email, administrator.Mobile, administrator.AvatarUrl);
+            if (!fieldValid.IsValid) return fieldValid;
+
             var valid = await InsertValidateAsync(administrator.UserName, password, administrator.Email, administrator.Mobile);
             if (!valid.IsValid) return valid;
 
@@ -477,14 +480,26 @@ namespace SSCMS.Core.Repositories
             }
             catch (Exception ex)
             {
-                return (false, ex.Message);
+                // 不向调用方暴露数据库异常详情（库名/表名/字段名），仅输出到服务端日志
+                Console.Error.WriteLine($"Administrator insert failed: {ex}");
+                return (false, "数据保存失败，请检查输入内容");
             }
         }
 
         public async Task<(bool IsValid, string ErrorMessage)> UpdateAsync(Administrator administrator)
         {
             var admin = await GetByUserIdAsync(administrator.Id);
+            if (admin == null) return (false, "管理员不存在");
             var cacheKeys = GetCacheKeys(admin);
+
+            // 仅对发生变化的字段做校验，避免历史数据格式不规范导致无法更新
+            var fieldValid = AccountValidateUtils.Validate(
+                administrator.UserName != admin.UserName ? administrator.UserName : null,
+                administrator.DisplayName != admin.DisplayName ? administrator.DisplayName : null,
+                administrator.Email != admin.Email ? administrator.Email : null,
+                administrator.Mobile != admin.Mobile ? administrator.Mobile : null,
+                administrator.AvatarUrl != admin.AvatarUrl ? administrator.AvatarUrl : null);
+            if (!fieldValid.IsValid) return fieldValid;
 
             var valid = await UpdateValidateAsync(admin, administrator.UserName, administrator.Email, administrator.Mobile);
             if (!valid.IsValid) return valid;

@@ -223,9 +223,10 @@ namespace SSCMS.Web
                 var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
                 var exception = exceptionHandlerPathFeature.Error;
 
+                var errorId = 0;
                 try
                 {
-                    errorLogRepository.AddErrorLogAsync(exception).GetAwaiter().GetResult();
+                    errorId = errorLogRepository.AddErrorLogAsync(exception).GetAwaiter().GetResult();
                 }
                 catch
                 {
@@ -244,15 +245,36 @@ namespace SSCMS.Web
                 }
                 else
                 {
+                    // 生产环境不向客户端返回异常详情（避免泄露库名、表名、字段名、路径等），详情见系统错误日志
                     result = TranslateUtils.JsonSerialize(new
                     {
-                        exception.Message,
+                        Message = "系统异常，请稍后重试或联系管理员",
+                        ErrorId = errorId,
                         CreatedDate = DateTime.Now
                     });
                 }
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(result);
             }));
+
+            // 移除可能泄露中间件/框架版本的响应头
+            app.Use(async (context, next) =>
+            {
+                context.Response.OnStarting(() =>
+                {
+                    var headers = context.Response.Headers;
+                    headers.Remove("Server");
+                    headers.Remove("X-Powered-By");
+                    headers.Remove("X-AspNet-Version");
+                    headers.Remove("X-AspNetMvc-Version");
+                    if (!headers.ContainsKey("X-Content-Type-Options"))
+                    {
+                        headers["X-Content-Type-Options"] = "nosniff";
+                    }
+                    return Task.CompletedTask;
+                });
+                await next();
+            });
 
             app.UseCors(CorsPolicy);
 

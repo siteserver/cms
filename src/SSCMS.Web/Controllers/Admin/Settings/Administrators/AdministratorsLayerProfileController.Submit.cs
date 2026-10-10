@@ -14,22 +14,27 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             var userId = request.UserId;
-
             var adminId = _authManager.AdminId;
-            if (adminId != userId &&
-                !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
-            {
-                return Unauthorized();
-            }
 
             Administrator administrator;
             if (userId > 0)
             {
                 administrator = await _administratorRepository.GetByUserIdAsync(userId);
                 if (administrator == null) return this.Error(Constants.ErrorNotFound);
+
+                // 越权校验：只能修改本人或有权管理的管理员
+                if (administrator.Id != adminId &&
+                    !await _authManager.CanManageAdministratorAsync(administrator))
+                {
+                    return Unauthorized();
+                }
             }
             else
             {
+                if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
+                {
+                    return Unauthorized();
+                }
                 administrator = new Administrator();
             }
 

@@ -17,6 +17,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
+            var target = await _administratorRepository.GetByUserIdAsync(adminId);
+            if (target == null || !await _authManager.CanManageAdministratorAsync(target))
+            {
+                return Unauthorized();
+            }
+
             var isSuperAdmin = await _authManager.IsSuperAdminAsync();
 
             List<string> roles;

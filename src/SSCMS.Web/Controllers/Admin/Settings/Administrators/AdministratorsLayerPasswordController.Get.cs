@@ -17,8 +17,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             if (string.IsNullOrEmpty(userName)) userName = adminName;
             var administrator = await _administratorRepository.GetByUserNameAsync(userName);
             if (administrator == null) return this.Error(Constants.ErrorNotFound);
-            if (userName != adminName &&
-                !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
+            if (administrator.Id != _authManager.AdminId &&
+                !await _authManager.CanManageAdministratorAsync(administrator))
             {
                 return Unauthorized();
             }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,25 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             }
 
             var adminInfo = await _administratorRepository.GetByUserIdAsync(adminId);
+            if (adminInfo == null || !await _authManager.CanManageAdministratorAsync(adminInfo))
+            {
+                return Unauthorized();
+            }
+
+            var isSuperAdmin = await _authManager.IsSuperAdminAsync();
+            // 防止提权：非超级管理员只能分配普通管理员级别，且只能分配自己创建的角色；不能修改自己的权限
+            if (!isSuperAdmin)
+            {
+                if (adminInfo.Id == _authManager.AdminId || request.AdminLevel == "SuperAdmin" || request.AdminLevel == "SiteAdmin")
+                {
+                    return Unauthorized();
+                }
+                var ownRoles = await _roleRepository.GetRoleNamesByCreatorUserNameAsync(_authManager.AdminName);
+                if (request.CheckedRoles != null && request.CheckedRoles.Any(r => !ownRoles.Contains(r)))
+                {
+                    return Unauthorized();
+                }
+            }
 
             await _administratorsInRolesRepository.RemoveUserAsync(adminInfo.UserName);
             if (request.AdminLevel == "SuperAdmin")

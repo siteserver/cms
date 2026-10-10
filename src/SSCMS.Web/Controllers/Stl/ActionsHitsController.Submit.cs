@@ -29,7 +29,9 @@ namespace SSCMS.Web.Controllers.Stl
             }
             catch (Exception ex)
             {
-                return this.Error(ex.Message);
+                // 前台匿名接口，不返回异常详情
+                Console.Error.WriteLine($"Hits submit failed: {ex}");
+                return this.Error("请求处理失败");
             }
         }
     }

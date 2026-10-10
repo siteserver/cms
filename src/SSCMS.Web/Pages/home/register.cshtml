@@ -23,12 +23,12 @@
     </div>
 
     <el-form v-on:submit.native.prevent ref="form" :model="form" size="medium" label-width="100px" status-icon>
-      <el-form-item label="用户名" prop="userName" :rules="[{ required: true, message: '请输入用户名' }]">
-        <el-input v-model="form.userName"></el-input>
+      <el-form-item label="用户名" prop="userName" :rules="[{ required: true, message: '请输入用户名' }, { max: 50, message: '用户名长度不能超过50个字符' }]">
+        <el-input v-model="form.userName" maxlength="50"></el-input>
         <small class="tips">用户名是用户的唯一标识，注册后无法更改</small>
       </el-form-item>
-      <el-form-item v-if="isUserRegistrationDisplayName" label="姓名" prop="displayName" :rules="[{ required: true, message: '请输入姓名' }]">
-        <el-input v-model="form.displayName"></el-input>
+      <el-form-item v-if="isUserRegistrationDisplayName" label="姓名" prop="displayName" :rules="[{ required: true, message: '请输入姓名' }, { max: 50, message: '姓名长度不能超过50个字符' }]">
+        <el-input v-model="form.displayName" maxlength="50"></el-input>
       </el-form-item>
       <el-form-item v-if="isMobile" label="手机号码" prop="mobile" :rules="[
           { required: true, message: '请输入手机号码' },
@@ -49,9 +49,10 @@
 
       <el-form-item v-if="isUserRegistrationEmail" label="电子邮箱" prop="email" :rules="[
         { required: true, message: '请输入电子邮箱' },
-        { type: 'email', message: '请输入有效的电子邮箱' }
+        { type: 'email', message: '请输入有效的电子邮箱' },
+        { max: 100, message: '邮箱长度不能超过100个字符' }
       ]">
-        <el-input v-model="form.email" placeholder="请输入电子邮箱"></el-input>
+        <el-input v-model="form.email" placeholder="请输入电子邮箱" maxlength="100"></el-input>
         <small class="tips">电子邮箱可用于登录、找回密码等功能</small>
       </el-form-item>
 

@@ -18,7 +18,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 
             return new GetResult
             {
-                Config = config
+                Config = new ConfigDto
+                {
+                    IsMaterialSiteOnly = config.IsMaterialSiteOnly
+                }
             };
         }
     }

@@ -27,10 +27,26 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             _configRepository = configRepository;
         }
 
+        /// <summary>
+        /// 仅返回页面所需字段，避免泄露 CloudToken 等敏感配置
+        /// </summary>
+        public class ConfigDto : SubmitRequest
+        {
+            public static ConfigDto From(Config c) => new ConfigDto
+            {
+                IsUserRegistrationAllowed = c.IsUserRegistrationAllowed, IsUserRegistrationChecked = c.IsUserRegistrationChecked,
+                IsUserUnRegistrationAllowed = c.IsUserUnRegistrationAllowed, IsUserForceVerifyMobile = c.IsUserForceVerifyMobile,
+                UserPasswordMinLength = c.UserPasswordMinLength, UserPasswordRestriction = c.UserPasswordRestriction,
+                UserRegistrationMinMinutes = c.UserRegistrationMinMinutes, IsUserLockLogin = c.IsUserLockLogin,
+                UserLockLoginCount = c.UserLockLoginCount, UserLockLoginType = c.UserLockLoginType,
+                UserLockLoginHours = c.UserLockLoginHours, IsUserCaptchaDisabled = c.IsUserCaptchaDisabled
+            };
+        }
+
         public class GetResult
         {
             public bool IsSmsEnabled { get; set; }
-            public Config Config { get; set; }
+            public ConfigDto Config { get; set; }
         }
 
         public class SubmitRequest

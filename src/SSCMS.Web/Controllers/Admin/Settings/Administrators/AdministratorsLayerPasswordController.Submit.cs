@@ -19,13 +19,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             if (string.IsNullOrEmpty(userName)) userName = adminName;
             var adminInfo = await _administratorRepository.GetByUserNameAsync(userName);
             if (adminInfo == null) return this.Error(Constants.ErrorNotFound);
-            if (userName != adminName &&
-                !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
+            var isSelf = adminInfo.Id == _authManager.AdminId;
+            if (!isSelf && !await _authManager.CanManageAdministratorAsync(adminInfo))
             {
                 return Unauthorized();
             }
 
-            if (request.UserName == _authManager.AdminName)
+            // 修改本人密码必须校验旧密码（用户名大小写变化也不能绕过）
+            if (isSelf)
             {
                 var oldPassword = StringUtils.Base64Decode(request.OldPassword);
                 var (administrator, _, _) = await _administratorRepository.ValidateAsync(userName, oldPassword, false);

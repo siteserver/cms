@@ -25,9 +25,17 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
             _configRepository = configRepository;
         }
 
+        /// <summary>
+        /// 仅返回页面所需字段，避免泄露 CloudToken 等敏感配置
+        /// </summary>
+        public class ConfigDto
+        {
+            public bool IsMaterialSiteOnly { get; set; }
+        }
+
         public class GetResult
         {
-            public Config Config { get; set; }
+            public ConfigDto Config { get; set; }
         }
 
         public class SubmitRequest
