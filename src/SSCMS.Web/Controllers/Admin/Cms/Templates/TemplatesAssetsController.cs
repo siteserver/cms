@@ -26,6 +26,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private const string ExtJs = "js";
         private const string ExtImages = "images";
 
+        /// <summary>
+        /// 根据文件类型获取允许操作的资源根目录（相对站点目录），不支持的类型返回 null。
+        /// </summary>
+        private static string GetAssetsDir(Site site, string fileType)
+        {
+            if (StringUtils.EqualsIgnoreCase(fileType, ExtCss)) return site.TemplatesAssetsCssDir;
+            if (StringUtils.EqualsIgnoreCase(fileType, ExtJs)) return site.TemplatesAssetsJsDir;
+            if (StringUtils.EqualsIgnoreCase(fileType, ExtImages)) return site.TemplatesAssetsImagesDir;
+            return null;
+        }
+
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;

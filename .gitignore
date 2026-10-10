@@ -321,3 +321,9 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+# SSCMS local runtime files
+# 安装向导生成的数据库连接配置
+src/SSCMS.Web/sscms.json
+# ASP.NET Core DataProtection 密钥
+src/SSCMS.Web/key-*.xml

@@ -58,13 +58,13 @@
   <el-table-column
     label="错误摘要">
     <template slot-scope="scope">
-      <span v-html="scope.row.summary"></span>
+      <span>{{ scope.row.summary }}</span>
     </template>
   </el-table-column>
   <el-table-column
     label="错误消息">
     <template slot-scope="scope">
-      <span v-html="scope.row.message"></span>
+      <span>{{ scope.row.message }}</span>
     </template>
   </el-table-column>
 </el-table>

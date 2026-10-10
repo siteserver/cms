@@ -7,9 +7,10 @@ namespace SSCMS.Web.Controllers.Admin
     public partial class ErrorController
     {
         [HttpGet, Route(Route)]
-        public async Task<GetResult> Get([FromQuery] int logId)
+        public async Task<ActionResult<GetResult>> Get([FromQuery] int logId)
         {
             var error = await _errorLogRepository.GetErrorLogAsync(logId);
+            if (error == null) return NotFound();
 
             return new GetResult
             {

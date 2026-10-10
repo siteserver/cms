@@ -117,14 +117,34 @@ namespace SSCMS.Utils
             return Directory.Exists(directoryPath);
         }
 
+        /// <summary>
+        /// 判断 path 是否位于 parentDirectoryPath 之内（含自身）。
+        /// 先用 Path.GetFullPath 规范化，消除 ../ 等路径遍历；再按“父目录 + 分隔符”前缀匹配，避免 /web 误判 /web2。
+        /// </summary>
         public static bool IsInDirectory(string parentDirectoryPath, string path)
         {
-            if (string.IsNullOrEmpty(parentDirectoryPath) || string.IsNullOrEmpty(path)) return false;
+            if (string.IsNullOrWhiteSpace(parentDirectoryPath) || string.IsNullOrWhiteSpace(path)) return false;
+            if (parentDirectoryPath.IndexOf('\0') >= 0 || path.IndexOf('\0') >= 0) return false;
 
-            parentDirectoryPath = StringUtils.ToLower(parentDirectoryPath.Trim().TrimEnd(Path.DirectorySeparatorChar));
-            path = StringUtils.ToLower(path.Trim().TrimEnd(Path.DirectorySeparatorChar));
+            string parent;
+            string child;
+            try
+            {
+                parent = Path.GetFullPath(parentDirectoryPath.Trim()).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                child = Path.GetFullPath(path.Trim()).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            }
+            catch
+            {
+                return false;
+            }
 
-            return parentDirectoryPath == path || path.StartsWith(parentDirectoryPath);
+            // Linux 文件系统区分大小写，Windows/macOS 默认不区分
+            var comparison = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux)
+                ? System.StringComparison.Ordinal
+                : System.StringComparison.OrdinalIgnoreCase;
+
+            return string.Equals(parent, child, comparison) ||
+                   child.StartsWith(parent + Path.DirectorySeparatorChar, comparison);
         }
 
         public static void MoveDirectory(string srcDirectoryPath, string destDirectoryPath, bool isOverride)

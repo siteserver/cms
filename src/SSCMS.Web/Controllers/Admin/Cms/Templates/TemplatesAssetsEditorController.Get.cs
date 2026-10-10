@@ -32,38 +32,31 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var path = string.Empty;
             var content = string.Empty;
 
-            var directoryPath = request.DirectoryPath; // PathUtils.RemoveParentPath(request.DirectoryPath);
-            var fileName = PathUtils.RemoveParentPath(request.FileName);
+            var assetsDir = GetAssetsDir(site, request.FileType);
+            if (string.IsNullOrEmpty(assetsDir))
+            {
+                return this.Error("文件获取失败，必须为Html/Css/Js文件！");
+            }
+
+            var directoryPath = request.DirectoryPath;
+            var fileName = request.FileName;
 
             if (!string.IsNullOrEmpty(fileName))
             {
-                var filePath = await _pathManager.GetSitePathAsync(site, directoryPath, fileName);
+                // 路径必须位于对应类型的资源目录内且扩展名匹配，否则拒绝（防止任意文件读取）
+                var filePath = await ResolveAssetPathAsync(site, request.FileType, directoryPath, fileName);
+                if (filePath == null)
+                {
+                    return this.Error("文件获取失败，文件路径不正确！");
+                }
 
                 if (FileUtils.IsFileExists(filePath))
                 {
                     content = await FileUtils.ReadTextAsync(filePath);
                 }
 
-                if (StringUtils.EqualsIgnoreCase(request.FileType, "html"))
-                {
-                    path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(directoryPath, site.TemplatesAssetsIncludeDir,
-                        string.Empty), fileName);
-                }
-                else if (StringUtils.EqualsIgnoreCase(request.FileType, "css"))
-                {
-                    path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(directoryPath, site.TemplatesAssetsCssDir,
-                        string.Empty), fileName);
-                }
-                else if (StringUtils.EqualsIgnoreCase(request.FileType, "js"))
-                {
-                    path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(directoryPath, site.TemplatesAssetsJsDir,
-                        string.Empty), fileName);
-                }
-                else
-                {
-                    return this.Error("文件获取失败，必须为Html/Css/Js文件！");
-                }
-
+                path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(directoryPath ?? string.Empty, assetsDir,
+                    string.Empty), fileName);
                 path = StringUtils.TrimSlash(PathUtils.RemoveExtension(path));
             }
 

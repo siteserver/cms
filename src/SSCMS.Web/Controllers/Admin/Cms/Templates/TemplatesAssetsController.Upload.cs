@@ -76,8 +76,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 return this.Error(Constants.ErrorUpload);
             }
 
+            // 规范化后校验：目标文件必须位于对应类型资源目录内（防止 css/../.. 之类的目录穿越）
+            if (!AssetPathUtils.IsSafeFileName(fileName) || !AssetPathUtils.IsSafeRelativePath(directories))
+            {
+                return this.Error("资源文件路径错误！");
+            }
+            var rootPath = await _pathManager.GetSitePathAsync(site, GetAssetsDir(site, request.FileType));
             var directoryPath = await _pathManager.GetSitePathAsync(site, directories);
             var filePath = PathUtils.Combine(directoryPath, fileName);
+            if (!AssetPathUtils.IsUnder(rootPath, filePath))
+            {
+                return this.Error("资源文件路径错误！");
+            }
 
             await _pathManager.UploadAsync(file, filePath);
             if (request.FileType == ExtImages)

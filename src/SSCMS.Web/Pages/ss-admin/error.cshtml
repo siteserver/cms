@@ -11,13 +11,14 @@
   </div>
   <div class="card-body">
     <blockquote class="blockquote mb-0">
-      <p v-if="message" v-html="message" style="word-wrap: break-word; font-size: 14px; font-weight: bold;"></p>
-      <p v-if="stackTrace" v-html="stackTrace" style="word-wrap: break-word; font-size: 14px;"></p>
-      <p v-if="createdDate" v-html="createdDate" style="word-wrap: break-word; font-size: 14px;"></p>
+      <!-- 使用文本插值（自动 HTML 转义），禁止 v-html 渲染用户可控数据，防止 XSS -->
+      <p v-if="message" style="word-wrap: break-word; white-space: pre-wrap; font-size: 14px; font-weight: bold;">{{ message }}</p>
+      <p v-if="stackTrace" style="word-wrap: break-word; white-space: pre-wrap; font-size: 14px;">{{ stackTrace }}</p>
+      <p v-if="createdDate" style="word-wrap: break-word; font-size: 14px;">{{ createdDate }}</p>
     </blockquote>
   </div>
   <div class="card-footer text-muted">
-    <span class="m-r-5">如需帮助，请点击链接向 SSCMS 官方 <a target="_blank" v-bind:href="'https://gitee.com/siteserver/cms/issues/new?title=' + message + '&description=' + stackTrace">提交问题</a></span>
+    <span class="m-r-5">如需帮助，请点击链接向 SSCMS 官方 <a target="_blank" rel="noopener noreferrer" v-bind:href="'https://gitee.com/siteserver/cms/issues/new?title=' + encodeURIComponent(message || '') + '&description=' + encodeURIComponent(stackTrace || '')">提交问题</a></span>
   </div>
 </div>
 

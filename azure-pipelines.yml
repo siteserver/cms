@@ -21,9 +21,9 @@ jobs:
   - task: UseDotNet@2
     inputs:
       version: $(netCoreSdkVersion)
-  - task: NodeTool@0
+  - task: UseNode@1
     inputs:
-      versionSpec: '12.x'
+      version: '12.x'
   - script: npm install
   - script: npm run build-win-x64
   - task: NuGetToolInstaller@1
@@ -84,9 +84,9 @@ jobs:
   - task: UseDotNet@2
     inputs:
       version: $(netCoreSdkVersion)
-  - task: NodeTool@0
+  - task: UseNode@1
     inputs:
-      versionSpec: '12.x'
+      version: '12.x'
   - script: npm install
   - script: npm run build-linux-x64
   - task: NuGetAuthenticate@1

@@ -20,8 +20,9 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.message = res.summary + ' ' + res.message;
-      $this.stackTrace = res.stackTrace ? res.stackTrace.replace(/\n/g, "<br>") : "";
+      // 页面以文本插值渲染，换行由 white-space: pre-wrap 处理，不再拼接 <br>
+      $this.message = [res.summary, res.message].filter(Boolean).join(' ');
+      $this.stackTrace = res.stackTrace || '';
       $this.createdDate = res.createdDate;
     }).catch(function (error) {
       utils.error(error);

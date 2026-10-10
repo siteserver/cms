@@ -25,10 +25,20 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
-            var directoryPath = PathUtils.RemoveParentPath(request.DirectoryPath);
-            var fileName = PathUtils.RemoveParentPath(request.FileName);
+            var directoryPath = request.DirectoryPath;
+            var fileName = request.FileName;
+            var assetsDir = GetAssetsDir(site, request.FileType);
+            if (string.IsNullOrEmpty(assetsDir) ||
+                !AssetPathUtils.IsSafeFileName(fileName) ||
+                !AssetPathUtils.IsSafeRelativePath(directoryPath))
+            {
+                return this.Error("资源文件路径错误！");
+            }
+
+            // 只允许删除对应类型资源目录内的文件
+            var rootPath = await _pathManager.GetSitePathAsync(site, assetsDir);
             var filePath = await _pathManager.GetSitePathAsync(site, directoryPath, fileName);
-            if (!_pathManager.IsInRootDirectory(filePath))
+            if (!AssetPathUtils.IsUnder(rootPath, filePath))
             {
                 return this.Error("资源文件路径错误！");
             }
