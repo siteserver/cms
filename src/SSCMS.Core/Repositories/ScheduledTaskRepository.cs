@@ -195,6 +195,7 @@ namespace SSCMS.Core.Repositories
             return await _repository.InsertAsync(task, Q.CachingRemove(CacheKey));
         }
 
+        [Obsolete("云助手已移除")]
         public async Task<int> InsertCloudSyncAsync()
         {
             var now = DateTime.Now;
@@ -207,12 +208,13 @@ namespace SSCMS.Core.Repositories
                 TaskInterval = TaskInterval.EveryHour,
                 Every = 1,
                 StartDate = startDate,
-                IsDisabled = false,
+                IsDisabled = true, // 云助手已移除，不再执行
                 Timeout = 60,
             };
             return await InsertAsync(task);
         }
 
+        [Obsolete("云助手已移除")]
         public async Task<int> InsertCloudBackupAsync()
         {
             var now = DateTime.Now;
@@ -225,7 +227,7 @@ namespace SSCMS.Core.Repositories
                 TaskInterval = TaskInterval.EveryDay,
                 Every = 1,
                 StartDate = startDate,
-                IsDisabled = false,
+                IsDisabled = true, // 云助手已移除，不再执行
                 Timeout = 60,
             };
             return await InsertAsync(task);

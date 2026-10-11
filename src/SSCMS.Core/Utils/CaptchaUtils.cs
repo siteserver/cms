@@ -1,11 +1,5 @@
 using System;
-using System.IO;
-using SixLabors.Fonts;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing.Processing;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -13,10 +7,7 @@ namespace SSCMS.Core.Utils
 {
     public static class CaptchaUtils
     {
-        // ImageSharp 4.x 移除了 Color.FromRgb，改用 Color.FromPixel
-        private static Color Rgb(byte r, byte g, byte b) => Color.FromPixel(new Rgb24(r, g, b));
-
-        private static readonly Color[] Colors = { Rgb(37, 72, 91), Rgb(68, 24, 25), Rgb(17, 46, 2), Rgb(70, 16, 100), Rgb(24, 88, 74) };
+        private static readonly SKColor[] Colors = { new SKColor(37, 72, 91), new SKColor(68, 24, 25), new SKColor(17, 46, 2), new SKColor(70, 16, 100), new SKColor(24, 88, 74) };
         // private static readonly char[] Chars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
         private static readonly char[] Chars = { 'B','C','E','F','G','H','J','K','M','P','Q','R','T','V','W','X','Y','2','3','4','6','7','8','9' };
 
@@ -81,16 +72,20 @@ namespace SSCMS.Core.Utils
             const int width = 130;
             const int height = 53;
             var r = new Random();
-            using (var image = new Image<Rgba32>(width, height))
+            using (var surface = SKSurface.Create(new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul)))
             {
-                var font = FontUtils.DefaultFont.CreateFont(40);
+                var canvas = surface.Canvas;
+                canvas.Clear(new SKColor(240, 243, 248));
 
-                // ImageSharp.Drawing 3.x：绘制操作统一通过 Paint + DrawingCanvas 完成
-                image.Mutate(ctx => ctx.Paint(canvas =>
+                using (var font = new SKFont(FontUtils.DefaultFont, 40))
+                using (var textPaint = new SKPaint { Color = Colors[r.Next(0, 5)], IsAntialias = true })
                 {
-                    canvas.Fill(Brushes.Solid(Rgb(240, 243, 248)));
-                    canvas.DrawText(new RichTextOptions(font) { Origin = new PointF(10, 10) }, code, Brushes.Solid(Colors[r.Next(0, 5)]), null);
+                    // Skia 以基线定位文字，减去 Ascent 使 (10, 10) 为文字左上角，与原 ImageSharp 行为一致
+                    canvas.DrawText(code, 10, 10 - font.Metrics.Ascent, font, textPaint);
+                }
 
+                using (var linePaint = new SKPaint { StrokeWidth = 1, IsAntialias = true, Style = SKPaintStyle.Stroke })
+                {
                     var random = new Random();
 
                     for (var i = 0; i < 25; i++)
@@ -100,7 +95,8 @@ namespace SSCMS.Core.Utils
                         var y1 = random.Next(height);
                         var y2 = random.Next(height);
 
-                        canvas.DrawLine(Pens.Solid(Colors[r.Next(0, 5)], 1), new PointF(x1, y1), new PointF(x2, y2));
+                        linePaint.Color = Colors[r.Next(0, 5)];
+                        canvas.DrawLine(x1, y1, x2, y2, linePaint);
                     }
 
                     for (var i = 0; i < 100; i++)
@@ -108,13 +104,14 @@ namespace SSCMS.Core.Utils
                         var x = random.Next(width);
                         var y = random.Next(height);
 
-                        canvas.DrawLine(Pens.Solid(Colors[r.Next(0, 5)], 1), new PointF(x, y), new PointF(x + 1, y + 1));
+                        linePaint.Color = Colors[r.Next(0, 5)];
+                        canvas.DrawLine(x, y, x + 1, y + 1, linePaint);
                     }
-                }));
+                }
 
-                using var ms = new MemoryStream();
-                image.Save(ms, PngFormat.Instance);
-                buffer = ms.ToArray();
+                using var snapshot = surface.Snapshot();
+                using var data = snapshot.Encode(SKEncodedImageFormat.Png, 100);
+                buffer = data.ToArray();
             }
 
             return buffer;

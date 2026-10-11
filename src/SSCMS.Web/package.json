@@ -147,83 +147,6 @@
         ],
         "order": 119
       },
-      "app_settings_cloudsDashboard": {
-        "text": "云助手面板",
-        "type": [
-          "app"
-        ],
-        "order": 120
-      },
-      "app_settings_cloudsTickets": {
-        "text": "工单技术支持",
-        "type": [
-          "app"
-        ],
-        "order": 121
-      },
-      "app_settings_cloudsCensor": {
-        "text": "违规检测设置",
-        "type": [
-          "app"
-        ],
-        "order": 122
-      },
-      "app_settings_cloudsSpell": {
-        "text": "文本纠错设置",
-        "type": [
-          "app"
-        ],
-        "order": 123
-      },
-      "app_settings_cloudsBackup": {
-        "text": "云备份设置",
-        "type": [
-          "app"
-        ],
-        "order": 124
-      },
-      "app_settings_cloudsCdn": {
-        "text": "CDN加速设置",
-        "type": [
-          "app"
-        ],
-        "order": 125
-      },
-      "app_settings_cloudsVod": {
-        "text": "云视频设置",
-        "type": [
-          "app"
-        ],
-        "order": 126
-      },
-      "app_settings_cloudsSms": {
-        "text": "短信集成设置",
-        "type": [
-          "app"
-        ],
-        "order": 127
-      },
-      "app_settings_cloudsMail": {
-        "text": "邮件集成设置",
-        "type": [
-          "app"
-        ],
-        "order": 128
-      },
-      "app_settings_cloudsTasks": {
-        "text": "定时任务设置",
-        "type": [
-          "app"
-        ],
-        "order": 129
-      },
-      "app_settings_cloudsAdmin": {
-        "text": "后台版权设置",
-        "type": [
-          "app"
-        ],
-        "order": 130
-      },
       "app_settings_analysisAdminLogin": {
         "text": "管理员登录统计",
         "type": [
@@ -279,6 +202,20 @@
           "app"
         ],
         "order": 138
+      },
+      "app_settings_tasks": {
+        "text": "定时任务设置",
+        "type": [
+          "app"
+        ],
+        "order": 129
+      },
+      "app_settings_adminConfig": {
+        "text": "后台版权设置",
+        "type": [
+          "app"
+        ],
+        "order": 130
       },
       "app_settings_utilitiesConfig": {
         "text": "系统设置",
@@ -881,17 +818,6 @@
           "app_settings_usersConfig",
           "app_settings_homeConfig",
           "app_settings_homeMenus",
-          "app_settings_cloudsDashboard",
-          "app_settings_cloudsTickets",
-          "app_settings_cloudsCensor",
-          "app_settings_cloudsSpell",
-          "app_settings_cloudsBackup",
-          "app_settings_cloudsCdn",
-          "app_settings_cloudsVod",
-          "app_settings_cloudsSms",
-          "app_settings_cloudsMail",
-          "app_settings_cloudsTasks",
-          "app_settings_cloudsAdmin",
           "app_settings_analysisAdminLogin",
           "app_settings_analysisSiteContent",
           "app_settings_analysisUser",
@@ -901,6 +827,8 @@
           "app_settings_logsError",
           "app_settings_logsConfig",
           "app_settings_configAdmin",
+          "app_settings_tasks",
+          "app_settings_adminConfig",
           "app_settings_utilitiesConfig",
           "app_settings_utilitiesCache",
           "app_settings_utilitiesParameters",
@@ -1103,125 +1031,6 @@
               }
             }
           },
-          "app_settings_cloud_all": {
-            "text": "云助手管理",
-            "permissions": [
-              "app_settings_cloudsDashboard",
-              "app_settings_cloudsTickets",
-              "app_settings_cloudsCensor",
-              "app_settings_cloudsSpell",
-              "app_settings_cloudsBackup",
-              "app_settings_cloudsCdn",
-              "app_settings_cloudsVod",
-              "app_settings_cloudsSms",
-              "app_settings_cloudsMail",
-              "app_settings_cloudsTasks",
-              "app_settings_cloudsAdmin"
-            ],
-            "iconClass": "ion-cloud",
-            "order": 106,
-            "menus": {
-              "app_settings_cloudsDashboard": {
-                "text": "云助手面板",
-                "iconClass": "el-icon-star-off",
-                "link": "./clouds/dashboard/",
-                "permissions": [
-                  "app_settings_cloudsDashboard"
-                ],
-                "order": 101
-              },
-              "app_settings_cloudsTickets": {
-                "text": "工单技术支持",
-                "iconClass": "el-icon-service",
-                "link": "./clouds/tickets/",
-                "permissions": [
-                  "app_settings_cloudsTickets"
-                ],
-                "order": 102
-              },
-              "app_settings_cloudsCensor": {
-                "text": "违规检测设置",
-                "iconClass": "el-icon-circle-check",
-                "link": "./clouds/censor/",
-                "permissions": [
-                  "app_settings_cloudsCensor"
-                ],
-                "order": 103
-              },
-              "app_settings_cloudsSpell": {
-                "text": "文本纠错设置",
-                "iconClass": "el-icon-finished",
-                "link": "./clouds/spell/",
-                "permissions": [
-                  "app_settings_cloudsSpell"
-                ],
-                "order": 104
-              },
-              "app_settings_cloudsBackup": {
-                "text": "云备份设置",
-                "iconClass": "el-icon-refresh",
-                "link": "./clouds/backup/",
-                "permissions": [
-                  "app_settings_cloudsBackup"
-                ],
-                "order": 105
-              },
-              "app_settings_cloudsCdn": {
-                "text": "CDN加速设置",
-                "iconClass": "el-icon-odometer",
-                "link": "./clouds/cdn/",
-                "permissions": [
-                  "app_settings_cloudsCdn"
-                ],
-                "order": 105
-              },
-              "app_settings_cloudsVod": {
-                "text": "云视频设置",
-                "iconClass": "el-icon-video-play",
-                "link": "./clouds/vod/",
-                "permissions": [
-                  "app_settings_cloudsVod"
-                ],
-                "order": 106
-              },
-              "app_settings_cloudsSms": {
-                "text": "短信集成设置",
-                "iconClass": "el-icon-chat-dot-round",
-                "link": "./clouds/sms/",
-                "permissions": [
-                  "app_settings_cloudsSms"
-                ],
-                "order": 108
-              },
-              "app_settings_cloudsMail": {
-                "text": "邮件集成设置",
-                "iconClass": "el-icon-message",
-                "link": "./clouds/mail/",
-                "permissions": [
-                  "app_settings_cloudsMail"
-                ],
-                "order": 109
-              },
-              "app_settings_cloudsTasks": {
-                "text": "定时任务设置",
-                "iconClass": "el-icon-time",
-                "link": "./clouds/tasks/",
-                "permissions": [
-                  "app_settings_cloudsTasks"
-                ],
-                "order": 110
-              },
-              "app_settings_cloudsAdmin": {
-                "text": "后台版权设置",
-                "iconClass": "el-icon-setting",
-                "link": "./clouds/admin/",
-                "permissions": [
-                  "app_settings_cloudsAdmin"
-                ],
-                "order": 111
-              }
-            }
-          },
           "app_settings_analysis_all": {
             "text": "统计图表",
             "permissions": [
@@ -1318,7 +1127,9 @@
               "app_settings_utilitiesConfig",
               "app_settings_utilitiesCache",
               "app_settings_utilitiesParameters",
-              "app_settings_utilitiesEncrypt"
+              "app_settings_utilitiesEncrypt",
+              "app_settings_tasks",
+              "app_settings_adminConfig"
             ],
             "iconClass": "ion-briefcase",
             "order": 109,
@@ -1354,6 +1165,22 @@
                   "app_settings_utilitiesEncrypt"
                 ],
                 "order": 104
+              },
+              "app_settings_tasks": {
+                "text": "定时任务设置",
+                "link": "./settings/tasks/",
+                "permissions": [
+                  "app_settings_tasks"
+                ],
+                "order": 105
+              },
+              "app_settings_adminConfig": {
+                "text": "后台版权设置",
+                "link": "./settings/adminConfig/",
+                "permissions": [
+                  "app_settings_adminConfig"
+                ],
+                "order": 106
               }
             }
           }

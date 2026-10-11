@@ -1,47 +1,30 @@
 using System;
 using System.IO;
-using System.Numerics;
-using SixLabors.Fonts;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing;
-using SixLabors.ImageSharp.Drawing.Processing;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 using SSCMS.Utils;
-using Path = SixLabors.ImageSharp.Drawing.Path;
 
 namespace SSCMS.Core.Utils
 {
-    public static class ImageUtils
+    public static partial class ImageUtils
     {
         public static void AddTextWaterMark(string imagePath, string text, string fontName, int fontSize, int waterMarkPosition, int waterMarkOpacity, int minWidth, int minHeight)
         {
             try
             {
-                using (var img = Image.Load(imagePath))
+                // 不支持编码的格式（如 GIF）直接跳过，避免破坏原图
+                if (GetEncodedFormat(imagePath) == null) return;
+
+                using (var img = Load(imagePath))
                 {
-                    if (minWidth > 0)
-                    {
-                        if (img.Width < minWidth)
-                        {
-                            return;
-                        }
-                    }
-                    if (minHeight > 0)
-                    {
-                        if (img.Height < minHeight)
-                        {
-                            return;
-                        }
-                    }
+                    if (minWidth > 0 && img.Width < minWidth) return;
+                    if (minHeight > 0 && img.Height < minHeight) return;
 
-                    var font = FontUtils.GetFont(fontName).CreateFont(fontSize);
-
-                    using (var img2 = img.Clone(ctx => ctx.ApplyTextWaterMark(font, text, waterMarkPosition, waterMarkOpacity)))
+                    using (var canvas = new SKCanvas(img))
+                    using (var font = new SKFont(FontUtils.GetFont(fontName), fontSize))
                     {
-                        img2.Save(imagePath);
+                        ApplyTextWaterMark(canvas, new SKSizeI(img.Width, img.Height), font, text, waterMarkPosition, waterMarkOpacity);
                     }
+                    Save(img, imagePath);
                 }
             }
             catch
@@ -54,27 +37,18 @@ namespace SSCMS.Core.Utils
         {
             try
             {
-                using (var img = Image.Load(imagePath))
-                {
-                    if (minWidth > 0)
-                    {
-                        if (img.Width < minWidth)
-                        {
-                            return;
-                        }
-                    }
-                    if (minHeight > 0)
-                    {
-                        if (img.Height < minHeight)
-                        {
-                            return;
-                        }
-                    }
+                if (GetEncodedFormat(imagePath) == null) return;
 
-                    using (var img2 = img.Clone(ctx => ctx.ApplyImageWaterMark(waterMarkImagePath, waterMarkPosition, waterMarkTransparency)))
+                using (var img = Load(imagePath))
+                {
+                    if (minWidth > 0 && img.Width < minWidth) return;
+                    if (minHeight > 0 && img.Height < minHeight) return;
+
+                    using (var canvas = new SKCanvas(img))
                     {
-                        img2.Save(imagePath);
+                        ApplyImageWaterMark(canvas, new SKSizeI(img.Width, img.Height), waterMarkImagePath, waterMarkPosition, waterMarkTransparency);
                     }
+                    Save(img, imagePath);
                 }
             }
             catch
@@ -85,9 +59,20 @@ namespace SSCMS.Core.Utils
 
         public static void Save(byte[] imgByte, string imagePath)
         {
-            using (var img = Image.Load(imgByte))
+            // 先解码以确认是合法图片
+            using (var img = Load(imgByte))
             {
-                img.Save(imagePath);
+                var format = GetEncodedFormat(imagePath);
+                if (format.HasValue)
+                {
+                    Save(img, imagePath, format.Value);
+                }
+                else
+                {
+                    // Skia 无法编码的格式（GIF、BMP 等）按原始字节保存
+                    DirectoryUtils.CreateDirectoryIfNotExists(imagePath);
+                    File.WriteAllBytes(imagePath, imgByte);
+                }
             }
         }
 
@@ -97,18 +82,13 @@ namespace SSCMS.Core.Utils
 
             try
             {
-                using (var img = Image.Load(imagePath))
-                {
-                    if (img.Width <= resizeWidth)
-                    {
-                        return;
-                    }
+                if (GetEncodedFormat(imagePath) == null) return;
 
-                    var height = img.Height * resizeWidth / img.Width;
+                var (width, imgHeight) = GetSize(imagePath);
+                if (width <= resizeWidth) return;
 
-                    img.Mutate(x => x.Resize(resizeWidth, height));
-                    img.Save(imagePath);
-                }
+                var height = imgHeight * resizeWidth / width;
+                ResizeTo(imagePath, imagePath, resizeWidth, height);
             }
             catch
             {
@@ -117,36 +97,29 @@ namespace SSCMS.Core.Utils
         }
 
 
-        private static IImageProcessingContext ApplyTextWaterMark(this IImageProcessingContext processingContext,
-            Font font,
-            string text,
-            int waterMarkPosition,
-            int waterMarkTransparency)
+        private static void ApplyTextWaterMark(SKCanvas canvas, SKSizeI imgSize, SKFont font, string text,
+            int waterMarkPosition, int waterMarkTransparency)
         {
-            Size imgSize = processingContext.GetCurrentSize();
             var pointF = GetWaterMarkPointF(imgSize, waterMarkPosition, 300, 60, true);
-            var a = waterMarkTransparency == 10 ? string.Empty : $"{waterMarkTransparency}0";
-            var color = Color.Parse("ffffff" + a);
-            return processingContext.Paint(canvas =>
-                canvas.DrawText(new RichTextOptions(font) { Origin = pointF }, text, Brushes.Solid(color), null));
+            // 与原实现一致：透明度 1-9 对应 alpha 0x10-0x90，10 为不透明
+            var alpha = waterMarkTransparency == 10 ? (byte)255 : Convert.ToByte($"{waterMarkTransparency}0", 16);
+            DrawTextTopLeft(canvas, text, pointF.X, pointF.Y, font, new SKColor(255, 255, 255, alpha));
         }
 
-        private static IImageProcessingContext ApplyImageWaterMark(this IImageProcessingContext processingContext,
-            string waterMarkImagePath,
-            int waterMarkPosition,
-            int waterMarkTransparency)
+        private static void ApplyImageWaterMark(SKCanvas canvas, SKSizeI imgSize, string waterMarkImagePath,
+            int waterMarkPosition, int waterMarkTransparency)
         {
-            Size imgSize = processingContext.GetCurrentSize();
-
-            using (var wmImg = Image.Load(waterMarkImagePath))
+            using (var wmImg = Load(waterMarkImagePath))
+            using (var wmImage = SKImage.FromBitmap(wmImg))
             {
                 var pointF = GetWaterMarkPointF(imgSize, waterMarkPosition, wmImg.Width, wmImg.Height, false);
-                var opacity = TranslateUtils.ToFloat(waterMarkTransparency.ToString()) / 10;
-                return processingContext.DrawImage(wmImg, new Point(Convert.ToInt32(pointF.X), Convert.ToInt32(pointF.Y)), opacity);
+                var opacity = Math.Clamp(TranslateUtils.ToFloat(waterMarkTransparency.ToString()) / 10, 0f, 1f);
+                using var paint = new SKPaint { Color = SKColors.White.WithAlpha((byte)Math.Round(opacity * 255)) };
+                canvas.DrawImage(wmImage, Convert.ToInt32(pointF.X), Convert.ToInt32(pointF.Y), HighQualitySampling, paint);
             }
         }
 
-        private static PointF GetWaterMarkPointF(Size image, int waterMarkPosition, float waterMarkWidth, float waterMarkHeight, bool textMark)
+        private static SKPoint GetWaterMarkPointF(SKSizeI image, int waterMarkPosition, float waterMarkWidth, float waterMarkHeight, bool textMark)
         {
             float x;
             float y;
@@ -253,7 +226,7 @@ namespace SSCMS.Core.Utils
                     y = image.Height - waterMarkHeight;
                     break;
             }
-            return new PointF(x, y);
+            return new SKPoint(x, y);
         }
 
         public static void MakeThumbnail(string originalImagePath, string thumbnailPath, int width, int height, bool isLessSizeNotThumb)
@@ -269,7 +242,7 @@ namespace SSCMS.Core.Utils
             }
             DirectoryUtils.CreateDirectoryIfNotExists(thumbnailPath);
 
-            using (var originalImage = Image.Load(originalImagePath))
+            using (var originalImage = Load(originalImagePath))
             {
                 if (width == 0)
                 {
@@ -300,7 +273,7 @@ namespace SSCMS.Core.Utils
             }
         }
 
-        private static void MakeThumbnail(Image originalImage, string originalImagePath, string thumbnailPath, int width, int height, string mode)
+        private static void MakeThumbnail(SKBitmap originalImage, string originalImagePath, string thumbnailPath, int width, int height, string mode)
         {
             var toWidth = width;
             var toHeight = height;
@@ -338,8 +311,8 @@ namespace SSCMS.Core.Utils
 
             try
             {
-                originalImage.Mutate(x => x.Resize(toWidth, toHeight));
-                originalImage.Save(thumbnailPath);
+                using var resized = Resize(originalImage, toWidth, toHeight);
+                Save(resized, thumbnailPath);
             }
             catch
             {
@@ -351,25 +324,19 @@ namespace SSCMS.Core.Utils
         {
             byte[] buffer;
 
-            var r = new Random();
-            using (var image = new Image<Rgba32>(200, 200))
+            using (var image = new SKBitmap(new SKImageInfo(200, 200, SKColorType.Rgba8888, SKAlphaType.Premul)))
             {
-                var fontFamily = FontUtils.GetFont("simhei");
-                var font = new Font(fontFamily, 17, FontStyle.Regular);
-
-                image.Mutate(ctx =>
+                using (var canvas = new SKCanvas(image))
+                using (var font = new SKFont(FontUtils.GetFont("simhei"), 17))
                 {
-                    ctx.Paint(canvas =>
-                    {
-                        canvas.Fill(Brushes.Solid(Color.Transparent));
-                        canvas.DrawText(new RichTextOptions(font) { Origin = new PointF(0, 0) }, text, Brushes.Solid(Color.Black), null);
-                    });
-                    ctx.Rotate(315);
-                });
+                    canvas.Clear(SKColors.Transparent);
+                    DrawTextTopLeft(canvas, text ?? string.Empty, 0, 0, font, SKColors.Black);
+                }
 
-                using var ms = new MemoryStream();
-                image.Save(ms, PngFormat.Instance);
-                buffer = ms.ToArray();
+                using (var rotated = Rotate(image, 315))
+                {
+                    buffer = EncodePng(rotated);
+                }
             }
 
             return Convert.ToBase64String(buffer);

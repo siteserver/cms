@@ -1,13 +1,14 @@
+// 云助手已移除：保留 cloud 全局对象与常量供在线模板/插件市场及第三方插件页面使用，
+// 不再保存或发送云助手令牌。
 var CLOUD_ACCESS_TOKEN_NAME = 'ss_cloud_access_token';
 var CLOUD_USER_NAME = 'ss_cloud_user_name';
-var $cloudToken = localStorage.getItem(CLOUD_ACCESS_TOKEN_NAME);
-var $cloudUserName = localStorage.getItem(CLOUD_USER_NAME);
+localStorage.removeItem(CLOUD_ACCESS_TOKEN_NAME);
+localStorage.removeItem(CLOUD_USER_NAME);
+var $cloudToken = null;
+var $cloudUserName = null;
 
 var cloud = _.extend(axios.create({
   baseURL: 'http://localhost:6060/v7',
-  headers: {
-    Authorization: "Bearer " + $cloudToken,
-  },
 }), {
   host: 'https://sscms.com',
   hostImages: 'https://images.sscms.com',
@@ -126,32 +127,26 @@ var cloud = _.extend(axios.create({
     return 0;
   },
 
-  // cloud authentication
+  // cloud authentication（云助手已移除，以下为兼容桩）
 
   isAuth: function() {
-    return ($cloudToken && $cloudUserName) ? true : false;
+    return false;
   },
 
-  logout: function() {
-    localStorage.removeItem(CLOUD_USER_NAME);
-    localStorage.removeItem(CLOUD_ACCESS_TOKEN_NAME);
-  },
+  logout: function() {},
 
-  login: function(userName, token) {
-    if (userName && token) {
-      localStorage.setItem(CLOUD_USER_NAME, userName);
-      localStorage.setItem(CLOUD_ACCESS_TOKEN_NAME, token);
-    } else {
-      this.logout();
-    }
-  },
+  login: function(userName, token) {},
 
+  // 原逻辑：未登录时跳转云助手登录页；现提示前往官网获取，不再执行 callback
   checkAuth: function(callback, url) {
-    if (!this.isAuth()) {
-      var redirect = url || location.href;
-      location.href = utils.getCloudsUrl('connect', {redirect: redirect});
-    } else if (callback) {
-      callback();
-    }
+    var target = url || this.host;
+    utils.alertWarning({
+      title: '云助手已移除',
+      text: '付费资源请前往官网获取后手动上传安装。',
+      button: '前往官网',
+      callback: function () {
+        window.open(target);
+      }
+    });
   },
 });

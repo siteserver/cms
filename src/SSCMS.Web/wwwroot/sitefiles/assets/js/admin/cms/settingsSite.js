@@ -125,15 +125,6 @@ var methods = {
         no: no,
         full: true
       });
-    } else if (type === 'cloudImages') {
-      utils.openLayer({
-        title: '选择免版权图库',
-        url: utils.getCloudsUrl('layerImagesSelect', {
-          attributeName: args.attributeName,
-          inputType: inputType,
-          no: args.no,
-        }),
-      });
     }
   },
 

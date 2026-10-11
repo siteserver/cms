@@ -2,19 +2,18 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
-using SixLabors.Fonts;
+using SkiaSharp;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {
     public static class FontUtils
     {
-        public static FontCollection Fonts { get; }
+        // 内嵌字体，按加载顺序保存，第一个为默认字体
+        private static readonly List<SKTypeface> Typefaces = new List<SKTypeface>();
 
         static FontUtils()
         {
-            Fonts = new FontCollection();
-
             var list = new List<string>
             {
                 "Fonts/arial.ttf",
@@ -29,25 +28,26 @@ namespace SSCMS.Core.Utils
             foreach (var fileName in list)
             {
                 using var reader = embeddedProvider.GetFileInfo(fileName).CreateReadStream();
-                Fonts.Add(reader);
+                var typeface = SKTypeface.FromStream(reader);
+                if (typeface != null) Typefaces.Add(typeface);
             }
-
-            //var assembly = typeof(FontManager).Assembly;
-            //var resource = assembly.GetManifestResourceStream("SS.CMS.Fonts.OpenSans-Regular.ttf");
-            //var font1 = Fonts.Install(resource);
         }
 
         public static List<string> GetFontFamilies()
         {
-            return Fonts.Families.Select(x => x.Name).ToList();
+            return Typefaces.Select(x => x.FamilyName).Distinct().ToList();
         }
 
-        public static FontFamily GetFont(string fontName)
+        public static SKTypeface GetFont(string fontName)
         {
-            var fonts = Fonts.Families.Where(x => StringUtils.EqualsIgnoreCase(x.Name, fontName)).ToList();
-            return fonts.Count == 0 ? DefaultFont : fonts.First();
+            // 同一字体族有多个字重时，优先取常规字重
+            var typeface = Typefaces
+                .Where(x => StringUtils.EqualsIgnoreCase(x.FamilyName, fontName))
+                .OrderBy(x => x.FontStyle.Weight == (int)SKFontStyleWeight.Normal && x.FontStyle.Slant == SKFontStyleSlant.Upright ? 0 : 1)
+                .FirstOrDefault();
+            return typeface ?? DefaultFont;
         }
 
-        public static FontFamily DefaultFont => Fonts.Families.First();
+        public static SKTypeface DefaultFont => Typefaces.First();
     }
 }

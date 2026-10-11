@@ -21,24 +21,33 @@ namespace SSCMS.Core.Services
         private readonly Ping _ping;
         private readonly ILogger<ScheduledHostedService> _logger;
         private static readonly TimeSpan FREQUENCY = TimeSpan.FromSeconds(5);
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly ISettingsManager _settingsManager;
-        private readonly ICloudManager _cloudManager;
-        private readonly ICreateManager _createManager;
-        private readonly IPathManager _pathManager;
-        private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private ISmsManager _smsManager;
+        private IMailManager _mailManager;
+        private ICreateManager _createManager;
+        private IPathManager _pathManager;
+        private IDatabaseManager _databaseManager;
+        private IPluginManager _pluginManager;
 
         public ScheduledHostedService(ILogger<ScheduledHostedService> logger, IServiceProvider serviceProvider)
         {
             _ping = new Ping();
             _logger = logger;
-            serviceProvider = serviceProvider.CreateScope().ServiceProvider;
+            _scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
             _settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
-            _cloudManager = serviceProvider.GetRequiredService<ICloudManager>();
-            _createManager = serviceProvider.GetRequiredService<ICreateManager>();
-            _pathManager = serviceProvider.GetRequiredService<IPathManager>();
-            _databaseManager = serviceProvider.GetRequiredService<IDatabaseManager>();
-            _pluginManager = serviceProvider.GetRequiredService<IPluginManager>();
+        }
+
+        // 仓储在构造时捕获数据库连接串，必须每轮新建 scope，
+        // 否则启动时（安装前）创建的仓储会一直持有空连接串
+        private void ResolveScopedServices(IServiceProvider provider)
+        {
+            _smsManager = provider.GetRequiredService<ISmsManager>();
+            _mailManager = provider.GetRequiredService<IMailManager>();
+            _createManager = provider.GetRequiredService<ICreateManager>();
+            _pathManager = provider.GetRequiredService<IPathManager>();
+            _databaseManager = provider.GetRequiredService<IDatabaseManager>();
+            _pluginManager = provider.GetRequiredService<IPluginManager>();
         }
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,20 +58,18 @@ namespace SSCMS.Core.Services
 
                 if (string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString)) continue;
 
+                using var scope = _scopeFactory.CreateScope();
+                ResolveScopedServices(scope.ServiceProvider);
+
                 ScheduledTask task = null;
                 try
                 {
-                    var config = await _databaseManager.ConfigRepository.GetAsync();
-                    if (config.CloudType == CloudType.Free || string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken) || config.CloudUserId == 0)
-                    {
-                        continue;
-                    }
-
+                    if (!await _databaseManager.ConfigRepository.IsInitializedAsync()) continue;
                     task = await _databaseManager.ScheduledTaskRepository.GetNextAsync();
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogError(ex, ex.Message);
                 }
 
                 if (task == null) continue;
@@ -142,13 +149,14 @@ namespace SSCMS.Core.Services
             {
                 await PublishAsync(task);
             }
-            else if (StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.CloudSync.GetValue()))
+#pragma warning disable CS0618
+            else if (StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.CloudSync.GetValue()) ||
+                     StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.CloudBackup.GetValue()))
+#pragma warning restore CS0618
             {
-                await CloudSyncAsync(task);
-            }
-            else if (StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.CloudBackup.GetValue()))
-            {
-                await CloudBackupAsync(task);
+                // 云助手已移除：历史遗留的云同步/云备份任务不再执行，直接禁用
+                task.IsDisabled = true;
+                throw new NotSupportedException("云助手已移除，该任务已禁用");
             }
             else if (!string.IsNullOrEmpty(task.TaskType))
             {
@@ -187,7 +195,7 @@ namespace SSCMS.Core.Services
                             { "time", DateUtils.GetTimeString(task.LatestEndDate.Value) }
                         };
 
-                        await _cloudManager.SendSmsAsync(task.NoticeMobile, SmsCodeType.TaskSuccess, parameters);
+                        await _smsManager.SendSmsAsync(task.NoticeMobile, SmsCodeType.TaskSuccess, parameters);
                     }
                     if (task.IsNoticeMail && StringUtils.IsEmail(task.NoticeMail))
                     {
@@ -198,7 +206,7 @@ namespace SSCMS.Core.Services
                             new KeyValuePair<string, string>("完成时间", DateUtils.GetDateAndTimeString(task.LatestEndDate.Value))
                         };
 
-                        await _cloudManager.SendMailAsync(task.NoticeMail, "任务执行成功", string.Empty, items);
+                        await _mailManager.SendMailAsync(task.NoticeMail, "任务执行成功", string.Empty, items);
                     }
                 }
             }
@@ -214,7 +222,7 @@ namespace SSCMS.Core.Services
                             { "time", DateUtils.GetTimeString(task.LatestEndDate.Value) }
                         };
 
-                        await _cloudManager.SendSmsAsync(task.NoticeMobile, SmsCodeType.TaskFailure, parameters);
+                        await _smsManager.SendSmsAsync(task.NoticeMobile, SmsCodeType.TaskFailure, parameters);
                     }
                     if (task.IsNoticeMail && StringUtils.IsEmail(task.NoticeMail))
                     {
@@ -225,7 +233,7 @@ namespace SSCMS.Core.Services
                             new KeyValuePair<string, string>("失败原因", task.LatestErrorMessage)
                         };
 
-                        await _cloudManager.SendMailAsync(task.NoticeMail, "任务执行失败", string.Empty, items);
+                        await _mailManager.SendMailAsync(task.NoticeMail, "任务执行失败", string.Empty, items);
                     }
                 }
             }

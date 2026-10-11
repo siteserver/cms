@@ -21,8 +21,10 @@ namespace SSCMS.Repositories
 
         Task<ScheduledTask> GetPublishAsync(int siteId, int channelId, int contentId);
 
+        [Obsolete("云助手已移除")]
         Task<int> InsertCloudSyncAsync();
 
+        [Obsolete("云助手已移除")]
         Task<int> InsertCloudBackupAsync();
 
         Task UpdateAsync(ScheduledTask task);

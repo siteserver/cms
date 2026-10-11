@@ -164,8 +164,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 }
             }
 
-            var isCloudCensor = _censorManager is ICloudManager;
-            var isCloudSpell = _spellManager is ICloudManager;
+            // 云助手已移除：前端不再直连云端审核/纠错，统一调用后端接口（可由插件实现）
+            var isCloudCensor = false;
+            var isCloudSpell = false;
             var settings = new Settings
             {
                 IsCloudCensor = isCloudCensor,

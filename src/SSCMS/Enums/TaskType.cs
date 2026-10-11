@@ -16,9 +16,12 @@ namespace SSCMS.Enums
         [DataEnum(DisplayName = "定时发布")]
         Publish,
 
+        // 云助手已移除，保留枚举值以兼容插件与历史数据
+        [System.Obsolete("云助手已移除")]
         [DataEnum(DisplayName = "云同步")]
         CloudSync,
 
+        [System.Obsolete("云助手已移除")]
         [DataEnum(DisplayName = "云备份")]
         CloudBackup,
     }

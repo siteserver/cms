@@ -6,12 +6,8 @@ var $urlPreview = $url + "/actions/preview";
 var $urlTags = $url + "/actions/tags";
 var $urlCensor = $url + "/actions/censor";
 var $urlCensorAddWords = $url + "/actions/censorAddWords";
-var $urlCloudCensor = "cms/censor";
-var $urlCloudCensorAddWords = "cms/censor/actions/addWords";
 var $urlSpell = $url + "/actions/spell";
 var $urlSpellAddWords = $url + "/actions/spellAddWords";
-var $urlCloudSpell = "cms/spell";
-var $urlCloudSpellAddWords = "cms/spell/actions/addWords";
 
 var $regCensor = /<a[^>]*_censor_original=["']([^"']*)["'][^>]*>[^>]*<\/a>/g;
 var $regSpell = /<a[^>]*_spell_original=["']([^"']*)["'][^>]*>[^>]*<\/a>/g;
@@ -416,201 +412,104 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    if (this.censorSettings.isCloudCensor) {
-      cloud.post($urlCloudCensorAddWords, {
-        isWhiteList: true,
-        words: word
-      })
-      .then(function (response) {
-        var res = response.data;
-        $this.parse('censor_whitelist', word);
-      })
-      .catch(function (error) {
-        utils.error(error, {
-          ignoreAuth: true,
-        });
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
-    } else {
-      $api.csrfPost(this.csrfToken, $urlCensorAddWords, {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        word: word
-      })
-      .then(function (response) {
-        var res = response.data;
-        $this.parse('censor_whitelist', word);
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
-    }
+    $api.csrfPost(this.csrfToken, $urlCensorAddWords, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      word: word
+    })
+    .then(function (response) {
+      var res = response.data;
+      $this.parse('censor_whitelist', word);
+    })
+    .catch(function (error) {
+      utils.error(error);
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiCloudCensor: function (isSave) {
     var $this = this;
     this.censorSettings.isCensorChecking = true;
-    if (this.censorSettings.isCloudCensor) {
-      cloud.post($urlCloudCensor, {
-        text: this.getText(true, false),
-      })
-      .then(function (response) {
-        var res = response.data;
-        $this.censorResults = _.assign({}, res);
-        $this.censorSettings.activeNames = [];
-        for (var badWord of $this.censorResults.badWords) {
-          if (badWord.words.length > 0) {
-            $this.censorSettings.activeNames.push(badWord.type);
-          }
+    $api.csrfPost(this.csrfToken, $urlCensor, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      text: this.getText(true, false),
+    })
+    .then(function (response) {
+      var res = response.data;
+      $this.censorResults = _.assign({}, res);
+      $this.censorSettings.activeNames = [];
+      for (var badWord of $this.censorResults.badWords) {
+        if (badWord.words.length > 0) {
+          $this.censorSettings.activeNames.push(badWord.type);
         }
-        $this.sideType = "censor";
-        $this.parseText(res);
+      }
+      $this.sideType = "censor";
+      $this.parseText(res);
 
-        if (isSave && !$this.censorResults.isBadWords) {
-          $this.censorSettings.isCensorPassed = true;
-          $this.apiSave();
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (isSave) {
-          $this.censorSettings.isCensorPassed = true;
-          $this.apiSave();
-        }
-      })
-      .then(function () {
-        $this.censorSettings.isCensorChecking = false;
-      });
-    } else {
-      $api.csrfPost(this.csrfToken, $urlCensor, {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        text: this.getText(true, false),
-      })
-      .then(function (response) {
-        var res = response.data;
-        $this.censorResults = _.assign({}, res);
-        $this.censorSettings.activeNames = [];
-        for (var badWord of $this.censorResults.badWords) {
-          if (badWord.words.length > 0) {
-            $this.censorSettings.activeNames.push(badWord.type);
-          }
-        }
-        $this.sideType = "censor";
-        $this.parseText(res);
-
-        if (isSave && !$this.censorResults.isBadWords) {
-          $this.censorSettings.isCensorPassed = true;
-          $this.apiSave();
-        }
-      })
-      .catch(function (error) {
-        utils.error(error);
-        layer.closeAll();
-      })
-      .then(function () {
-        $this.censorSettings.isCensorChecking = false;
-      });
-    }
+      if (isSave && !$this.censorResults.isBadWords) {
+        $this.censorSettings.isCensorPassed = true;
+        $this.apiSave();
+      }
+    })
+    .catch(function (error) {
+      utils.error(error);
+      layer.closeAll();
+    })
+    .then(function () {
+      $this.censorSettings.isCensorChecking = false;
+    });
   },
 
   apiCloudSpellAddWords: function (word) {
     var $this = this;
 
     utils.loading(this, true);
-    if (this.spellSettings.isCloudSpell) {
-      cloud.post($urlCloudSpellAddWords, {
-        words: word
-      })
-      .then(function (response) {
-        var res = response.data;
-        $this.parse('spell_whitelist', word);
-      })
-      .catch(function (error) {
-        utils.error(error, {
-          ignoreAuth: true,
-        });
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
-    } else {
-      $api.csrfPost(this.csrfToken, $urlSpellAddWords, {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        word: word
-      })
-      .then(function (response) {
-        var res = response.data;
-        $this.parse('spell_whitelist', word);
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
-    }
+    $api.csrfPost(this.csrfToken, $urlSpellAddWords, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      word: word
+    })
+    .then(function (response) {
+      var res = response.data;
+      $this.parse('spell_whitelist', word);
+    })
+    .catch(function (error) {
+      utils.error(error);
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiCloudSpell: function (isSave) {
     var $this = this;
     this.spellSettings.isSpellChecking = true;
-    if (this.spellSettings.isCloudSpell) {
-      cloud.post($urlCloudSpell, {
-        text: this.getText(false, true),
-      })
-      .then(function (response) {
-        var res = response.data;
-        $this.spellResults = _.assign({}, res);
-        $this.sideType = "spell";
-        $this.parseText(res);
+    $api.csrfPost(this.csrfToken, $urlSpell, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      text: this.getText(false, true),
+    })
+    .then(function (response) {
+      var res = response.data;
+      $this.spellResults = _.assign({}, res);
+      $this.sideType = "spell";
+      $this.parseText(res);
 
-        if (isSave && !$this.spellResults.isErrorWords) {
-          $this.spellSettings.isSpellPassed = true;
-          $this.apiSave();
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (isSave) {
-          $this.spellSettings.isSpellPassed = true;
-          $this.apiSave();
-        }
-      })
-      .then(function () {
-        $this.spellSettings.isSpellChecking = false;
-      });
-    } else {
-      $api.csrfPost(this.csrfToken, $urlSpell, {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        text: this.getText(false, true),
-      })
-      .then(function (response) {
-        var res = response.data;
-        $this.spellResults = _.assign({}, res);
-        $this.sideType = "spell";
-        $this.parseText(res);
-
-        if (isSave && !$this.spellResults.isErrorWords) {
-          $this.spellSettings.isSpellPassed = true;
-          $this.apiSave();
-        }
-      })
-      .catch(function (error) {
-        utils.error(error);
-        layer.closeAll();
-      })
-      .then(function () {
-        $this.spellSettings.isSpellChecking = false;
-      });
-    }
+      if (isSave && !$this.spellResults.isErrorWords) {
+        $this.spellSettings.isSpellPassed = true;
+        $this.apiSave();
+      }
+    })
+    .catch(function (error) {
+      utils.error(error);
+      layer.closeAll();
+    })
+    .then(function () {
+      $this.spellSettings.isSpellChecking = false;
+    });
   },
 
   apiTags: function () {
@@ -880,15 +779,6 @@ var methods = {
         attributeName: attributeName,
         no: no,
         full: true,
-      });
-    } else if (type === "cloudImages") {
-      utils.openLayer({
-        title: "选择免版权图库",
-        url: utils.getCloudsUrl("layerImagesSelect", {
-          inputType: inputType,
-          attributeName: args.attributeName,
-          no: args.no,
-        }),
       });
     }
   },

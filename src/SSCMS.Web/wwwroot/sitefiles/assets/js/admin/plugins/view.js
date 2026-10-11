@@ -263,33 +263,9 @@ var methods = {
     });
   },
 
+  // 云助手已移除：付费资源不再在后台购买，前往官网获取后手动上传安装
   btnBuyClick: function() {
-    var $this = this;
-    var url = utils.addQuery(location.href, {
-      buy: true
-    });
-    cloud.checkAuth(function() {
-      utils.openLayer({
-        title: '购买',
-        width: 600,
-        height: 500,
-        url: cloud.host + '/layer/pay.html?resourceType=Extension&userName=' + $this.extension.userName + '&name=' + $this.extension.name
-      });
-
-      window.addEventListener(
-        'message',
-        function(e) {
-          if (e.origin !== cloud.host) return;
-          var userName = e.data.userName;
-          var name = e.data.name;
-          if (userName && name) {
-            $this.btnInstallClick();
-          }
-        },
-        false,
-      );
-    }, url);
-    // window.open(this.getPluginUrl());
+    cloud.checkAuth(null, cloud.host + '/plugins/plugin.html?userName=' + encodeURIComponent(this.extension.userName) + '&name=' + encodeURIComponent(this.extension.name));
   },
 
   btnInstallClick: function() {

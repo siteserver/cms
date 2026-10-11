@@ -47,14 +47,6 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      if (res.isCloudVod) {
-        location.href = utils.getCloudsUrl('layerVodSelect', {
-          inputType: $this.inputType,
-          attributeName: $this.attributeName,
-          no: $this.no,
-        });
-      }
-
       $this.isSiteOnly = res.isSiteOnly;
       if ($this.isSiteOnly) {
         $this.form.groupId = -$this.siteId;

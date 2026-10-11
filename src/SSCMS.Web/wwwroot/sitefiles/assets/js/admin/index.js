@@ -110,10 +110,6 @@ var methods = {
           });
         }
 
-        if (!cloud.isAuth()) {
-          cloud.login($this.cloudUserName, $this.cloudToken);
-        }
-
         var sideMenuIds = [];
         if (location.hash) {
           var ids = location.hash.substr(1).split('/');

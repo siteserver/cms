@@ -78,13 +78,6 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      if (res.isCloudVod) {
-        location.href = utils.getCloudsUrl('layerVodUpload', {
-          attributeName: $this.attributeName,
-          no: $this.no,
-        });
-      }
-
       $this.form.isChangeFileName = res.isChangeFileName;
       $this.form.isLibrary = res.isLibrary;
       $this.reExtensions = new RegExp('(' + res.videoUploadExtensions.replace(/,/g, '|').replace(/\./g, '\\.') + ')$', 'i');

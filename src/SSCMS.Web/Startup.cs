@@ -255,24 +255,21 @@ namespace SSCMS.Web
                     }
                 }
             }
-            else if (SSCMS.Core.Services.SettingsManager.RunningInContainer)
+            if (trustedProxies == null || !trustedProxies.Any(p => !string.IsNullOrWhiteSpace(p)))
             {
-                // 容器部署时反向代理（如 docker/cluster 中的 nginx）位于 Docker 私有网段，而不是 loopback。
-                // 未显式配置 TrustedProxies 时默认信任私有网段，避免所有请求都被识别为代理 IP，
-                // 导致后台白名单误判、短信/验证码按 IP 限频变成全站共享。
-                // 显式配置非空的 TrustedProxies 后以配置为准（不再默认信任私有网段）。
-                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("10.0.0.0"), 8));
-                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("172.16.0.0"), 12));
-                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("192.168.0.0"), 16));
-                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("fc00::"), 7));
+                // 未配置 TrustedProxies 时信任任意来源的代理，nginx / 负载均衡不在同一台机器上也无需额外配置。
+                // 清空 KnownProxies/KnownNetworks 即表示不限制代理来源；ForwardLimit = 1 只取最近一跳代理追加的 IP。
+                // 如需收紧（例如站点直接暴露公网、未经代理），可在 sscms.json 中配置 AdminRestriction:TrustedProxies。
+                options.KnownProxies.Clear();
+                options.KnownNetworks.Clear();
             }
             return options;
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository, IOptions<SenparcSetting> senparcSetting)
         {
-            // 放在管道最前：只有来源是受信代理（默认仅 loopback，可在 sscms.json 的
-            // AdminRestriction:TrustedProxies 配置）时才采用 X-Forwarded-For，防止客户端伪造 IP 绕过白名单
+            // 放在管道最前：采用 X-Forwarded-For 作为客户端 IP。默认信任任意代理来源，
+            // 如在 sscms.json 配置了 AdminRestriction:TrustedProxies，则只信任所配置的代理
             app.UseForwardedHeaders(GetForwardedHeadersOptions());
 
             if (env.IsDevelopment())

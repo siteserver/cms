@@ -125,6 +125,8 @@ namespace SSCMS.Core.Services
             }
 
             InstallUtils.SaveSettings(ContentRootPath, isProtectData, isSafeMode, isDisablePlugins, SecurityKey, type, databaseConnectionStringValue, redisConnectionStringValue, adminRestrictionHost, adminRestrictionAllowList, adminRestrictionBlockList, corsIsOrigins, corsOrigins);
+            // reloadOnChange 是异步的文件监听，这里同步重新加载，避免 Reload() 读到旧配置
+            (_config as IConfigurationRoot)?.Reload();
             Reload();
         }
 

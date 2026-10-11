@@ -320,9 +320,10 @@ namespace SSCMS.Web.Controllers.Admin
                     Level = await _authManager.GetAdminLevelAsync()
                 },
                 IsSafeMode = _settingsManager.IsSafeMode,
+                // 云助手已移除：字段保留以兼容前端/插件，不再下发云助手账号与令牌
                 CloudType = cloudType,
-                CloudUserName = config.CloudUserName,
-                CloudToken = config.CloudToken,
+                CloudUserName = string.Empty,
+                CloudToken = string.Empty,
                 CssUrls = cssUrls,
                 JsUrls = jsUrls,
                 Watermark = watermark,
