@@ -371,6 +371,11 @@ namespace SSCMS.Core.StlParser.StlElement
                 inputType = InputType.DateTime;
                 parsedContent = DateUtils.Format(channel.AddDate, format);
             }
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.LastModifiedDate)))
+            {
+                inputType = InputType.DateTime;
+                parsedContent = DateUtils.Format(channel.LastModifiedDate, format);
+            }
             else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ImageUrl)))
             {
                 //inputType = InputType.Image;
