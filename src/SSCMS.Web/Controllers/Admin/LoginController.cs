@@ -119,7 +119,8 @@ namespace SSCMS.Web.Controllers.Admin
 
             var config = await _configRepository.GetAsync();
 
-            if (string.IsNullOrEmpty(_settingsManager.Database.ConnectionString))
+            // 已写入数据库连接但安装未完成（如安装中途失败）时，同样回到安装向导，与 IndexController 一致
+            if (string.IsNullOrEmpty(_settingsManager.Database.ConnectionString) || await _configRepository.IsNeedInstallAsync())
             {
                 redirect = true;
                 redirectUrl = _pathManager.GetAdminUrl(InstallController.Route);

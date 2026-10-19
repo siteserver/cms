@@ -35,5 +35,4 @@
 
   // This one forces the tab to be **space**
   "editor.insertSpaces": true,
-  "window.zoomLevel": 1,
 }

@@ -61,7 +61,7 @@ namespace SSCMS.Web.Controllers.Admin
             // 不再向未认证调用者返回 SecurityKey（同时是 JWT 签名密钥），改为一次性短期安装令牌
             return new StringResult
             {
-                Value = InstallTokenUtils.Issue()
+                Value = InstallTokenUtils.Issue(_settingsManager.SecurityKey)
             };
         }
     }

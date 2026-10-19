@@ -14,6 +14,29 @@ namespace SSCMS.Core.Tests.Utils
     {
         private const string Ip = "203.0.113.10";
 
+        // ---------- InstallTokenUtils ----------
+
+        private const string Key = "0123456789abcdef0123456789abcdef.0123456789abcdef0123456789abcdef";
+
+        [Fact]
+        public void InstallToken_Valid_IsOneTime_And_SurvivesProcessState()
+        {
+            // 令牌只依赖 SecurityKey，不依赖进程内存，进程回收后依然可校验
+            var token = InstallTokenUtils.Issue(Key);
+            Assert.True(InstallTokenUtils.Consume(Key, token));
+            Assert.False(InstallTokenUtils.Consume(Key, token));
+        }
+
+        [Fact]
+        public void InstallToken_Rejects_WrongKey_Tampered_Expired()
+        {
+            Assert.False(InstallTokenUtils.Consume("other-key", InstallTokenUtils.Issue(Key)));
+            Assert.False(InstallTokenUtils.Consume(Key, InstallTokenUtils.Issue(Key) + "0"));
+            Assert.False(InstallTokenUtils.Consume(Key, "garbage"));
+            var old = InstallTokenUtils.Issue(Key, DateTimeOffset.UtcNow.AddMinutes(-31));
+            Assert.False(InstallTokenUtils.Consume(Key, old));
+        }
+
         // ---------- SmsCodeGuard ----------
 
         [Fact]
