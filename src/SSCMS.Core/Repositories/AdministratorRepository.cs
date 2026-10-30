@@ -531,23 +531,28 @@ namespace SSCMS.Core.Repositories
                 return (null, userName, "密码不能为空");
             }
 
+            // 账号不存在、锁定、密码错误统一返回同一提示，并保持相近耗时，防止枚举账号
+            const string invalidMessage = "账号或密码错误";
+
             var administrator = await GetByAccountAsync(account);
             if (string.IsNullOrEmpty(administrator?.UserName))
             {
-                return (null, userName, "帐号或密码错误");
+                PasswordHashUtils.DummyVerify(isPasswordMd5 ? password : PasswordHashUtils.ToMd5(password));
+                return (null, userName, invalidMessage);
             }
 
             userName = administrator.UserName;
 
-            var (success, errorMessage) = await ValidateLockAsync(administrator);
+            var (success, _) = await ValidateLockAsync(administrator);
             if (!success)
             {
-                return (null, userName, errorMessage);
+                PasswordHashUtils.DummyVerify(isPasswordMd5 ? password : PasswordHashUtils.ToMd5(password));
+                return (null, userName, invalidMessage);
             }
 
             return await CheckPasswordByAdminIdAsync(administrator.Id, password, isPasswordMd5)
                 ? (administrator, userName, string.Empty)
-                : (null, userName, "账号或密码错误");
+                : (null, userName, invalidMessage);
         }
 
         public async Task<(bool Success, string ErrorMessage)> ValidateLockAsync(Administrator administrator)

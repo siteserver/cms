@@ -532,17 +532,22 @@ namespace SSCMS.Core.Repositories
                 return (null, null, "密码不能为空");
             }
 
-            var user = await GetByAccountAsync(account);
+            // 账号不存在、未审核、锁定、密码错误统一返回同一提示，并保持相近耗时，防止枚举账号
+            const string invalidMessage = "账号或密码错误";
+            var passwordMd5 = isPasswordMd5 ? password : PasswordHashUtils.ToMd5(password);
 
+            var user = await GetByAccountAsync(account);
             if (string.IsNullOrEmpty(user?.UserName))
             {
-                return (null, null, "帐号或密码错误");
+                PasswordHashUtils.DummyVerify(passwordMd5);
+                return (null, null, invalidMessage);
             }
 
-            var (success, errorMessage) = await ValidateStateAsync(user);
+            var (success, _) = await ValidateStateAsync(user);
             if (!success)
             {
-                return (null, user.UserName, errorMessage);
+                PasswordHashUtils.DummyVerify(passwordMd5);
+                return (null, user.UserName, invalidMessage);
             }
 
             var userEntity = await GetByUserIdAsync(user.Id);
@@ -550,7 +555,7 @@ namespace SSCMS.Core.Repositories
             if (!CheckPassword(password, isPasswordMd5, userEntity.Password, userEntity.PasswordFormat, userEntity.PasswordSalt))
             {
                 await UpdateLastActivityDateAndCountOfFailedLoginAsync(user);
-                return (null, user.UserName, "帐号或密码错误");
+                return (null, user.UserName, invalidMessage);
             }
 
             // 旧格式口令（可逆或 SHA1）在登录成功后升级为 PBKDF2

@@ -52,6 +52,16 @@ namespace SSCMS.Core.Utils
             return CryptographicOperations.FixedTimeEquals(actual, expected);
         }
 
+        private static readonly byte[] DummySalt = RandomNumberGenerator.GetBytes(SaltSize);
+
+        /// <summary>
+        /// 账号不存在或不可登录时执行一次同等开销的 PBKDF2，使响应时间与真实校验一致，防止按耗时枚举账号。
+        /// </summary>
+        public static void DummyVerify(string passwordMd5)
+        {
+            Derive(passwordMd5 ?? string.Empty, DummySalt, Iterations);
+        }
+
         private static byte[] Derive(string passwordMd5, byte[] salt, int iterations)
         {
             var input = Encoding.UTF8.GetBytes(passwordMd5.Trim().ToLowerInvariant());

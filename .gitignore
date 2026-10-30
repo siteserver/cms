@@ -17,7 +17,7 @@ src/SSCMS.Web/.vs/
 src/SSCMS.Web/.vscode/
 src/SSCMS.Web/.config/
 src/SSCMS.Web/version.txt
-bugfixes/
+local_files/
 sscms-all.sln
 
 *.ps1

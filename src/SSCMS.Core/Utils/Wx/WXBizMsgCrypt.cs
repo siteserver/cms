@@ -40,7 +40,7 @@ namespace SSCMS.Core.Utils.Wx
         //构造函数
 	    // @param sToken: 公众平台上，开发者设置的Token
 	    // @param sEncodingAESKey: 公众平台上，开发者设置的EncodingAESKey
-	    // @param sAppID: 公众帐号的appid
+	    // @param sAppID: 公众账号的appid
         public WXBizMsgCrypt(string sToken, string sEncodingAESKey, string sAppID)
         {
             m_sToken = sToken;

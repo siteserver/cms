@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Home
                     user = await _userRepository.GetByUserNameAsync(userName);
                     if (user != null)
                     {
-                        await _logRepository.AddUserLogAsync(user, ipAddress, Constants.ActionsLoginFailure, "帐号或密码错误");
+                        await _logRepository.AddUserLogAsync(user, ipAddress, Constants.ActionsLoginFailure, "账号或密码错误");
                     }
                     return this.Error(errorMessage);
                 }
